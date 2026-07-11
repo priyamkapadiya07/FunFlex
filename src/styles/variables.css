@@ -1,0 +1,41 @@
+:root {
+  /* Soft, elegant pink palette */
+  --color-primary: #ff8fa3;
+  --color-primary-light: #ffb3c1;
+  --color-primary-dark: #ff4d6d;
+  --color-primary-alpha: rgba(255, 143, 163, 0.2);
+  
+  --color-background: #fff0f3;
+  --color-surface: #ffffff;
+  
+  --color-text: #590d22;
+  --color-text-muted: #a4133c;
+  
+  --color-success: #38b000;
+  --color-success-light: #ccff33;
+  
+  /* Difficulty Colors */
+  --color-diff-easy: #06d6a0;
+  --color-diff-medium: #ffd166;
+  --color-diff-hard: #f77f00;
+  --color-diff-expert: #ef476f;
+  --color-diff-impossible: #118ab2;
+  
+  /* Typography */
+  --font-family: 'Outfit', sans-serif;
+  
+  /* Shadows - Smooth & Soft */
+  --shadow-sm: 0 2px 8px rgba(255, 143, 163, 0.15);
+  --shadow-md: 0 4px 16px rgba(255, 143, 163, 0.2);
+  --shadow-lg: 0 8px 24px rgba(255, 143, 163, 0.3);
+  
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease-out;
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

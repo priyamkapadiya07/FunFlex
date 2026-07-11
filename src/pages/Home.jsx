@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from '../components/Header';
 import GameCard from '../components/GameCard';
-import { Type, Grid3X3, BrainCircuit } from 'lucide-react';
+import { Type, Smile, Hash, Calculator } from 'lucide-react';
 
 export default function Home() {
   const games = [
@@ -13,18 +13,25 @@ export default function Home() {
       route: '/word-search',
     },
     {
-      id: 'memory-match',
-      title: 'Memory Match',
-      description: 'Coming soon. Train your visual memory.',
-      icon: Grid3X3,
-      route: '/',
+      id: 'find-emoji',
+      title: 'Find the Emoji',
+      description: 'Spot the odd emoji out in the grid before your eyes cross.',
+      icon: Smile,
+      route: '/find-emoji',
     },
     {
-      id: 'pattern-memory',
-      title: 'Pattern Memory',
-      description: 'Coming soon. Remember the glowing patterns.',
-      icon: BrainCircuit,
-      route: '/',
+      id: 'tic-tac-toe',
+      title: 'Tic-Tac-Toe',
+      description: 'Classic game. The AI ranges from silly to mathematically impossible.',
+      icon: Hash,
+      route: '/tic-tac-toe',
+    },
+    {
+      id: 'mental-math',
+      title: 'Mental Math',
+      description: 'Sharpen your brain with rapid-fire equations. Easy to insane.',
+      icon: Calculator,
+      route: '/mental-math',
     }
   ];
 

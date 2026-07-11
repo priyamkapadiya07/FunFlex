@@ -41,6 +41,14 @@ export default function WordSearch() {
     loadPuzzle(difficulty);
   }, [difficulty, loadPuzzle]);
 
+  // Disable pull-to-refresh on mobile while playing the game
+  useEffect(() => {
+    document.body.style.overscrollBehaviorY = 'none';
+    return () => {
+      document.body.style.overscrollBehaviorY = 'auto';
+    };
+  }, []);
+
   const handleDifficultyChange = (newDiff) => {
     if (newDiff !== difficulty) {
       setDifficulty(newDiff);

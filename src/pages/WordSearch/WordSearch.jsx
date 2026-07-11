@@ -276,8 +276,9 @@ const styles = {
     textAlign: 'center',
   },
   wordsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
     gap: '12px',
     textAlign: 'center',
   },
@@ -285,5 +286,7 @@ const styles = {
     fontSize: '16px',
     fontWeight: 500,
     transition: 'var(--transition-fast)',
+    wordBreak: 'break-word',
+    padding: '4px 8px',
   }
 };

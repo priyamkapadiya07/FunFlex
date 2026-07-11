@@ -6,11 +6,11 @@ const DIRECTIONS = {
 };
 
 const SETTINGS = {
-  Easy: { size: 10, wordCount: 5, dirs: DIRECTIONS.EASY },
-  Medium: { size: 12, wordCount: 8, dirs: DIRECTIONS.MEDIUM },
-  Hard: { size: 14, wordCount: 12, dirs: DIRECTIONS.HARD },
-  Expert: { size: 16, wordCount: 15, dirs: DIRECTIONS.EXPERT },
-  Impossible: { size: 18, wordCount: 18, dirs: DIRECTIONS.EXPERT },
+  Easy: { size: 8, wordCount: 4, dirs: DIRECTIONS.EASY },
+  Medium: { size: 10, wordCount: 6, dirs: DIRECTIONS.MEDIUM },
+  Hard: { size: 12, wordCount: 8, dirs: DIRECTIONS.HARD },
+  Expert: { size: 14, wordCount: 10, dirs: DIRECTIONS.EXPERT },
+  Impossible: { size: 15, wordCount: 12, dirs: DIRECTIONS.EXPERT },
 };
 
 const getRandomInt = (max) => Math.floor(Math.random() * max);

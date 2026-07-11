@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-export default function Grid({ grid, foundWords, onWordFound, soundEnabled }) {
+export default function Grid({ grid, foundWords, hintedCells = [], onWordFound, soundEnabled }) {
   const [selection, setSelection] = useState([]);
   const [isSelecting, setIsSelecting] = useState(false);
   const gridRef = useRef(null);
@@ -116,9 +116,13 @@ export default function Grid({ grid, foundWords, onWordFound, soundEnabled }) {
           // Found words state
           const isFound = foundWords.some(fw => fw.some(s => s.row === rIdx && s.col === cIdx));
           
+          // Hinted cell state
+          const isHinted = hintedCells.some(s => s.row === rIdx && s.col === cIdx);
+          
           let bgColor = 'var(--color-surface)';
           let color = 'var(--color-text)';
           let scale = 1;
+          let extraStyle = {};
 
           if (isSelected) {
             bgColor = 'var(--color-primary)';
@@ -127,6 +131,10 @@ export default function Grid({ grid, foundWords, onWordFound, soundEnabled }) {
           } else if (isFound) {
             bgColor = 'var(--color-success-light)';
             color = 'var(--color-success)';
+          } else if (isHinted) {
+            bgColor = 'var(--color-diff-medium)';
+            color = '#fff';
+            extraStyle = { animation: 'pulse 1.5s infinite' };
           }
 
           return (
@@ -140,6 +148,7 @@ export default function Grid({ grid, foundWords, onWordFound, soundEnabled }) {
                 color,
                 transform: `scale(${scale})`,
                 fontSize: size > 14 ? '14px' : '18px', // Smaller font for bigger grids
+                ...extraStyle
               }}
               onMouseDown={() => startSelection(rIdx, cIdx)}
               onMouseEnter={() => updateSelection(rIdx, cIdx)}
@@ -162,17 +171,17 @@ const styles = {
   gridContainer: {
     display: 'grid',
     gap: '2px',
-    backgroundColor: 'var(--color-primary-alpha)', // Subtle border/gap color
+    backgroundColor: 'var(--color-primary-alpha)',
     padding: '4px',
     borderRadius: 'var(--radius-md)',
     boxShadow: 'var(--shadow-sm)',
-    touchAction: 'none', // Critical for preventing scroll while drawing on touch devices
-    userSelect: 'none', // Prevent text selection
+    touchAction: 'none',
+    userSelect: 'none',
     WebkitUserSelect: 'none',
     margin: '0 auto',
     width: '100%',
-    maxWidth: '500px', // max width to prevent it getting too big on desktop
-    aspectRatio: '1 / 1', // Keep it square
+    maxWidth: '500px',
+    aspectRatio: '1 / 1',
   },
   cell: {
     display: 'flex',
@@ -184,3 +193,17 @@ const styles = {
     transition: 'background-color 0.15s, transform 0.1s',
   }
 };
+
+// Global pulse animation for hints
+if (typeof document !== 'undefined' && !document.getElementById('grid-animations')) {
+  const style = document.createElement('style');
+  style.id = 'grid-animations';
+  style.innerHTML = `
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 209, 102, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 209, 102, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 209, 102, 0); }
+    }
+  `;
+  document.head.appendChild(style);
+}

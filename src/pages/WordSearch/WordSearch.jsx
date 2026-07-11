@@ -6,7 +6,7 @@ import Grid from './Grid';
 import { generatePuzzle } from './logic';
 import { useDifficulty } from '../../hooks/useDifficulty';
 import { useAppContext } from '../../context/AppContext';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Lightbulb } from 'lucide-react';
 
 export default function WordSearch() {
   const [difficulty, setDifficulty] = useDifficulty('wordSearch', 'Easy');
@@ -19,11 +19,13 @@ export default function WordSearch() {
   // Or simply keep track of which words string are found
   const [foundWordStrings, setFoundWordStrings] = useState([]);
   const [foundCoordinates, setFoundCoordinates] = useState([]); // Array of coordinate arrays
+  const [hintedCells, setHintedCells] = useState([]);
 
   const loadPuzzle = useCallback(async (diff) => {
     setLoading(true);
     setFoundWordStrings([]);
     setFoundCoordinates([]);
+    setHintedCells([]);
     
     // Slight delay to allow UI to show loading state if it was very fast
     const [data] = await Promise.all([
@@ -57,6 +59,7 @@ export default function WordSearch() {
 
     if (foundStr && !foundWordStrings.includes(foundStr)) {
       setFoundWordStrings(prev => [...prev, foundStr]);
+      setHintedCells([]); // Clear hint when they find a word
       
       // Premium pop sound effect
       if (soundEnabled) {
@@ -151,6 +154,25 @@ export default function WordSearch() {
     return null;
   };
 
+  const handleHint = () => {
+    if (!gridData) return;
+    const missingWords = gridData.wordsToFind.filter(w => !foundWordStrings.includes(w));
+    if (missingWords.length === 0) return;
+    
+    // Pick a random missing word
+    const randomWord = missingWords[Math.floor(Math.random() * missingWords.length)];
+    const coords = findWordCoordinates(gridData.grid, randomWord);
+    
+    if (coords && coords.length > 0) {
+      // Hint only the first letter
+      setHintedCells([coords[0]]);
+      
+      if (soundEnabled) {
+        playPopSound();
+      }
+    }
+  };
+
   const isComplete = gridData && foundWordStrings.length === gridData.wordsToFind.length;
 
   return (
@@ -188,10 +210,27 @@ export default function WordSearch() {
           </div>
         ) : (
           <div style={styles.gameArea}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '-16px' }}>
+              <button 
+                onClick={handleHint}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  padding: '6px 16px', borderRadius: 'var(--radius-full)',
+                  backgroundColor: 'var(--color-primary-alpha)',
+                  color: 'var(--color-primary-dark)',
+                  fontSize: '14px', fontWeight: 600,
+                  transition: 'var(--transition-fast)'
+                }}
+              >
+                <Lightbulb size={16} /> Tip
+              </button>
+            </div>
+            
             <div style={styles.gridWrapper}>
               <Grid 
                 grid={gridData.grid} 
                 foundWords={foundCoordinates}
+                hintedCells={hintedCells}
                 onWordFound={handleWordFound}
                 soundEnabled={soundEnabled}
               />

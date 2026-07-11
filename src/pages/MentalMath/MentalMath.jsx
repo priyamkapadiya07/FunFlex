@@ -4,6 +4,7 @@ import DifficultySelector from '../../components/DifficultySelector';
 import { useDifficulty } from '../../hooks/useDifficulty';
 import { useAppContext } from '../../context/AppContext';
 import { generateMathProblem } from './mathLogic';
+import { playMentalMathPop, playErrorSound as playError } from '../../utils/audio';
 
 export default function MentalMath() {
   const [difficulty, setDifficulty] = useDifficulty('mentalMath', 'Easy');
@@ -42,49 +43,11 @@ export default function MentalMath() {
   };
 
   const playPopSound = () => {
-    if (!soundEnabled) return;
-    try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
-      
-      gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.02);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      
-      oscillator.start(audioCtx.currentTime);
-      oscillator.stop(audioCtx.currentTime + 0.2);
-    } catch(e) {}
+    if (soundEnabled) playMentalMathPop();
   };
 
   const playErrorSound = () => {
-    if (!soundEnabled) return;
-    try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      
-      oscillator.type = 'sawtooth';
-      oscillator.frequency.setValueAtTime(200, audioCtx.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.2);
-      
-      gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.05);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      
-      oscillator.start(audioCtx.currentTime);
-      oscillator.stop(audioCtx.currentTime + 0.3);
-    } catch(e) {}
+    if (soundEnabled) playError();
   };
 
   const handleOptionClick = (opt, idx) => {

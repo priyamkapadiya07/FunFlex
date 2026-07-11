@@ -6,6 +6,7 @@ import Grid from './Grid';
 import { generatePuzzle } from './logic';
 import { useDifficulty } from '../../hooks/useDifficulty';
 import { useAppContext } from '../../context/AppContext';
+import { playStandardPop, playSuccessChime } from '../../utils/audio';
 import { Loader2, Lightbulb } from 'lucide-react';
 
 export default function WordSearch() {
@@ -90,51 +91,11 @@ export default function WordSearch() {
   };
 
   const playPopSound = () => {
-    try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      
-      // Marimba/pop character
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.1);
-      
-      // Quick envelope for pop
-      gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.02);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      
-      oscillator.start(audioCtx.currentTime);
-      oscillator.stop(audioCtx.currentTime + 0.2);
-    } catch(e) {}
+    if (soundEnabled) playStandardPop();
   };
 
   const playSuccessSound = () => {
-    try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const playNote = (freq, startTime, duration) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0, startTime);
-        gain.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(startTime);
-        osc.stop(startTime + duration);
-      };
-
-      const now = audioCtx.currentTime;
-      playNote(523.25, now, 0.4);       // C5
-      playNote(659.25, now + 0.15, 0.4); // E5
-      playNote(783.99, now + 0.3, 0.6);  // G5
-    } catch(e) {}
+    if (soundEnabled) playSuccessChime();
   };
 
   const findWordCoordinates = (grid, word) => {

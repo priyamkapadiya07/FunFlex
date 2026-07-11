@@ -43,9 +43,11 @@ export default function WordSearch() {
 
   // Disable pull-to-refresh on mobile while playing the game
   useEffect(() => {
-    document.body.style.overscrollBehaviorY = 'none';
+    document.documentElement.style.overscrollBehavior = 'none';
+    document.body.style.overscrollBehavior = 'none';
     return () => {
-      document.body.style.overscrollBehaviorY = 'auto';
+      document.documentElement.style.overscrollBehavior = '';
+      document.body.style.overscrollBehavior = '';
     };
   }, []);
 

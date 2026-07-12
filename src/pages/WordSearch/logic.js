@@ -1,16 +1,13 @@
 const DIRECTIONS = {
-  EASY: [[0, 1], [1, 0]], // Right, Down
-  MEDIUM: [[0, 1], [1, 0], [0, -1], [-1, 0]], // Right, Down, Left, Up
-  HARD: [[0, 1], [1, 0], [1, 1], [1, -1]], // Right, Down, Diag-DR, Diag-DL
-  EXPERT: [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, -1], [1, -1], [-1, 1]], // All 8 directions
+  ALL: [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [-1, -1], [1, -1], [-1, 1]], // All 8 directions
 };
 
 const SETTINGS = {
-  Easy: { size: 8, wordCount: 4, dirs: DIRECTIONS.EASY },
-  Medium: { size: 10, wordCount: 6, dirs: DIRECTIONS.MEDIUM },
-  Hard: { size: 12, wordCount: 8, dirs: DIRECTIONS.HARD },
-  Expert: { size: 14, wordCount: 10, dirs: DIRECTIONS.EXPERT },
-  Impossible: { size: 15, wordCount: 12, dirs: DIRECTIONS.EXPERT },
+  Easy: { size: 8, wordCount: 4, dirs: DIRECTIONS.ALL },
+  Medium: { size: 9, wordCount: 6, dirs: DIRECTIONS.ALL },
+  Hard: { size: 10, wordCount: 8, dirs: DIRECTIONS.ALL },
+  Expert: { size: 11, wordCount: 10, dirs: DIRECTIONS.ALL },
+  Impossible: { size: 12, wordCount: 12, dirs: DIRECTIONS.ALL },
 };
 
 const getRandomInt = (max) => Math.floor(Math.random() * max);
@@ -33,57 +30,80 @@ export const generatePuzzle = async (difficulty) => {
     wordList = ["RELAX", "PLAY", "FUN", "GAME", "SMILE"];
   }
 
-  // Pick random words
+  // Pick random words that fit in the grid
+  const validWords = wordList.filter(w => w.length <= settings.size);
   const selectedWords = [];
-  const wordsCopy = [...wordList];
+  const wordsCopy = [...validWords];
+  
   for (let i = 0; i < settings.wordCount && wordsCopy.length > 0; i++) {
     const idx = getRandomInt(wordsCopy.length);
-    const word = wordsCopy[idx];
-    if (word.length <= settings.size) {
-      selectedWords.push(word);
-    }
+    selectedWords.push(wordsCopy[idx]);
     wordsCopy.splice(idx, 1);
   }
 
   // Initialize grid
   const grid = Array(settings.size).fill(null).map(() => Array(settings.size).fill(''));
-
   const placedWords = [];
 
   // Try to place each word
   for (const word of selectedWords) {
-    let placed = false;
-    let attempts = 0;
-    while (!placed && attempts < 100) {
-      attempts++;
-      const dir = settings.dirs[getRandomInt(settings.dirs.length)];
-      const row = getRandomInt(settings.size);
-      const col = getRandomInt(settings.size);
+    const possiblePlacements = [];
 
-      // Check if word fits
-      let fits = true;
+    // Scan the entire board and all directions for valid placements
+    for (let r = 0; r < settings.size; r++) {
+      for (let c = 0; c < settings.size; c++) {
+        for (const dir of settings.dirs) {
+          let fits = true;
+          let intersections = 0;
+
+          for (let i = 0; i < word.length; i++) {
+            const nr = r + i * dir[0];
+            const nc = c + i * dir[1];
+
+            // Out of bounds
+            if (nr < 0 || nr >= settings.size || nc < 0 || nc >= settings.size) {
+              fits = false;
+              break;
+            }
+
+            const gridChar = grid[nr][nc];
+            // Conflict
+            if (gridChar !== '' && gridChar !== word[i]) {
+              fits = false;
+              break;
+            }
+
+            // Intersection
+            if (gridChar === word[i]) {
+              intersections++;
+            }
+          }
+
+          if (fits) {
+            possiblePlacements.push({ r, c, dir, intersections });
+          }
+        }
+      }
+    }
+
+    if (possiblePlacements.length > 0) {
+      // Find the maximum number of intersections available
+      const maxIntersections = Math.max(...possiblePlacements.map(p => p.intersections));
+      
+      // Filter out only the best placements (to maximize overlaps)
+      const bestPlacements = possiblePlacements.filter(p => p.intersections === maxIntersections);
+      
+      // Randomly pick one of the best placements
+      const chosen = bestPlacements[getRandomInt(bestPlacements.length)];
+
+      // Place the word on the grid
       for (let i = 0; i < word.length; i++) {
-        const r = row + i * dir[0];
-        const c = col + i * dir[1];
-        if (r < 0 || r >= settings.size || c < 0 || c >= settings.size) {
-          fits = false;
-          break;
-        }
-        if (grid[r][c] !== '' && grid[r][c] !== word[i]) {
-          fits = false;
-          break;
-        }
+        const nr = chosen.r + i * chosen.dir[0];
+        const nc = chosen.c + i * chosen.dir[1];
+        grid[nr][nc] = word[i];
       }
-
-      if (fits) {
-        for (let i = 0; i < word.length; i++) {
-          const r = row + i * dir[0];
-          const c = col + i * dir[1];
-          grid[r][c] = word[i];
-        }
-        placedWords.push(word);
-        placed = true;
-      }
+      
+      placedWords.push(word);
     }
   }
 

@@ -144,7 +144,7 @@ export default function WordSearch() {
     }
   };
 
-  const isComplete = gridData && foundWordStrings.length === gridData.wordsToFind.length;
+  const isComplete = gridData && gridData.wordsToFind.length > 0 && foundWordStrings.length === gridData.wordsToFind.length;
 
   return (
     <>

@@ -1,11 +1,18 @@
 [
-  "CAT", "DOG", "BIRD", "FISH", "TREE", "CAR", "BOOK", "PEN", "SUN", "MOON",
-  "STAR", "SKY", "BLUE", "RED", "BALL", "SHOE", "HAT", "DOOR", "CUP", "MILK",
-  "BEAR", "LION", "TIGER", "WOLF", "DUCK", "FROG", "PIG", "COW", "SHEEP", "GOAT",
-  "APPLE", "PEAR", "PLUM", "GRAPE", "KITE", "BIKE", "BOAT", "SHIP", "TRAIN", "BUS",
-  "HAND", "FOOT", "EYE", "EAR", "NOSE", "HAIR", "FACE", "BONE", "SKIN", "TOOTH",
-  "RAIN", "SNOW", "WIND", "FIRE", "DIRT", "SAND", "ROCK", "HILL", "ROAD", "PATH",
-  "GOLD", "IRON", "WOOD", "LEAF", "SEED", "ROOT", "STEM", "ROSE", "LILY", "WEED",
-  "BOY", "GIRL", "MAN", "BABY", "KING", "QUEEN", "COOK", "MAID", "FARM", "TOWN",
-  "CITY", "PARK", "ZOO", "BANK", "SHOP", "MALL", "ROOM", "BED", "SOFA", "DESK"
+  "APPLE", "BANANA", "ORANGE", "CHERRY", "GRAPE", "LEMON", "MELON", "PEACH", "PLUM",
+  "TIGER", "LION", "ZEBRA", "BEAR", "WOLF", "FOX", "DEER", "RABBIT", "HORSE", "COW",
+  "RED", "BLUE", "GREEN", "YELLOW", "PINK", "PURPLE", "BLACK", "WHITE", "BROWN",
+  "HAPPY", "SMILE", "LAUGH", "JOY", "FUN", "PLAY", "JUMP", "RUN", "WALK", "SWIM",
+  "SUN", "MOON", "STAR", "CLOUD", "RAIN", "SNOW", "WIND", "STORM", "TREE", "LEAF",
+  "BIRD", "FISH", "DUCK", "FROG", "SNAKE", "MOUSE", "CAT", "DOG", "BIRD", "FISH",
+  "HOUSE", "DOOR", "WINDOW", "ROOF", "WALL", "FLOOR", "CHAIR", "TABLE", "BED", "SOFA",
+  "CAR", "BUS", "TRAIN", "BOAT", "SHIP", "PLANE", "BIKE", "ROAD", "PATH", "WAY",
+  "BOOK", "PEN", "PAPER", "DESK", "SCHOOL", "CLASS", "TEACHER", "STUDENT", "READ", "WRITE",
+  "WATER", "MILK", "JUICE", "TEA", "COFFEE", "BREAD", "CHEESE", "MEAT", "RICE", "SOUP",
+  "HAND", "FOOT", "HEAD", "EYE", "EAR", "NOSE", "MOUTH", "TOOTH", "HAIR", "FACE",
+  "SHIRT", "PANTS", "SHOE", "SOCK", "HAT", "COAT", "DRESS", "SKIRT", "RING", "WATCH",
+  "CLOCK", "TIME", "DAY", "NIGHT", "WEEK", "MONTH", "YEAR", "TODAY", "NOW", "SOON",
+  "BOY", "GIRL", "MAN", "WOMAN", "CHILD", "BABY", "FRIEND", "FAMILY", "MOTHER", "FATHER",
+  "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN",
+  "BALL", "DOLL", "GAME", "TOY", "KITE", "BLOCK", "PUZZLE", "BEAR", "CAR", "TRAIN"
 ]

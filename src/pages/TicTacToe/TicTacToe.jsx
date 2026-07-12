@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import DifficultySelector from '../../components/DifficultySelector';
-import SuccessScreen from '../../components/SuccessScreen';
 import { useDifficulty } from '../../hooks/useDifficulty';
 import { useAppContext } from '../../context/AppContext';
 import { checkWinner, getAIMove } from './ai';
@@ -11,8 +10,12 @@ export default function TicTacToe() {
   const [difficulty, setDifficulty] = useDifficulty('ticTacToe', 'Easy');
   const { soundEnabled } = useAppContext();
   
+  const [gameMode, setGameMode] = useState('single'); // 'single' | 'multi'
+  const [playerPiece, setPlayerPiece] = useState('X'); // 'X' | 'O' for single player
+  const [firstTurn, setFirstTurn] = useState('X'); // 'X' | 'O' for who starts
+
   const [board, setBoard] = useState(Array(9).fill(null));
-  const [isPlayerTurn, setIsPlayerTurn] = useState(true);
+  const [currentTurn, setCurrentTurn] = useState('X'); // X always goes first
   const [winnerInfo, setWinnerInfo] = useState(null); // { winner: 'X'|'O'|'draw', line: [] }
 
   useEffect(() => {
@@ -39,70 +42,166 @@ export default function TicTacToe() {
     if (soundEnabled) playTicTacToeEnd(isWin);
   };
 
-  const resetGame = () => {
+  const resetGame = (overrideFirstTurn = firstTurn) => {
     setBoard(Array(9).fill(null));
-    setIsPlayerTurn(true);
+    setCurrentTurn(overrideFirstTurn);
     setWinnerInfo(null);
     window.successSoundPlayedThisRound = false;
   };
 
-  const handleCellClick = (index) => {
-    if (board[index] || winnerInfo || !isPlayerTurn) return;
+  // When gameMode or playerPiece changes, immediately reset
+  const handleGameModeChange = (mode) => {
+    setGameMode(mode);
+    resetGame(firstTurn);
+  };
 
-    playPopSound('X');
+  const handlePlayerPieceChange = (piece) => {
+    setPlayerPiece(piece);
+    resetGame(firstTurn);
+  };
+
+  const handleFirstTurnChange = (piece) => {
+    setFirstTurn(piece);
+    resetGame(piece);
+  };
+
+  const handleCellClick = (index) => {
+    if (board[index] || winnerInfo) return;
+
+    // Block if it's Single Player and it's currently the AI's turn
+    if (gameMode === 'single' && currentTurn !== playerPiece) return;
+
+    playPopSound(currentTurn);
     const newBoard = [...board];
-    newBoard[index] = 'X';
+    newBoard[index] = currentTurn;
     setBoard(newBoard);
-    setIsPlayerTurn(false);
 
     const winCheck = checkWinner(newBoard);
     if (winCheck) {
       setWinnerInfo(winCheck);
       return;
     }
+
+    setCurrentTurn(currentTurn === 'X' ? 'O' : 'X');
   };
 
+  // AI Turn Logic
   useEffect(() => {
-    if (!isPlayerTurn && !winnerInfo) {
+    if (gameMode === 'single' && !winnerInfo && currentTurn !== playerPiece) {
+      const aiPiece = playerPiece === 'X' ? 'O' : 'X';
       const timer = setTimeout(() => {
-        const aiMove = getAIMove(board, difficulty);
+        const aiMove = getAIMove(board, difficulty, aiPiece);
         if (aiMove !== -1) {
-          playPopSound('O');
+          playPopSound(aiPiece);
           const newBoard = [...board];
-          newBoard[aiMove] = 'O';
+          newBoard[aiMove] = aiPiece;
           setBoard(newBoard);
           
           const winCheck = checkWinner(newBoard);
           if (winCheck) {
             setWinnerInfo(winCheck);
           } else {
-            setIsPlayerTurn(true);
+            setCurrentTurn(playerPiece);
           }
         }
-      }, 500); // Small delay to make it feel natural
+      }, 500); // Small delay to feel natural
       return () => clearTimeout(timer);
     }
-  }, [isPlayerTurn, board, difficulty, winnerInfo]);
+  }, [currentTurn, gameMode, playerPiece, board, difficulty, winnerInfo]);
 
+  // End Game Sound Logic
   useEffect(() => {
     if (winnerInfo && soundEnabled && !window.successSoundPlayedThisRound) {
       window.successSoundPlayedThisRound = true;
-      playEndSound(winnerInfo.winner === 'X');
+      if (gameMode === 'single') {
+        playEndSound(winnerInfo.winner === playerPiece);
+      } else {
+        // In multiplayer, any non-draw is a win for someone
+        playEndSound(winnerInfo.winner !== 'draw');
+      }
     }
-  }, [winnerInfo, soundEnabled]);
+  }, [winnerInfo, soundEnabled, gameMode, playerPiece]);
+
+  const getWinnerText = () => {
+    if (winnerInfo.winner === 'draw') return 'It\'s a Draw!';
+    if (gameMode === 'single') {
+      return winnerInfo.winner === playerPiece ? 'You Won!' : 'AI Won!';
+    }
+    return `Player ${winnerInfo.winner} Won!`;
+  };
 
   return (
     <>
       <Header />
       <main style={styles.container}>
-        <DifficultySelector current={difficulty} onChange={handleDifficultyChange} />
+        
+        {/* Top Controls */}
+        <div style={styles.controlsRow}>
+          <div style={styles.selectorWrapper}>
+            <button 
+              style={gameMode === 'single' ? styles.activeTab : styles.inactiveTab}
+              onClick={() => handleGameModeChange('single')}
+            >
+              1-Player
+            </button>
+            <button 
+              style={gameMode === 'multi' ? styles.activeTab : styles.inactiveTab}
+              onClick={() => handleGameModeChange('multi')}
+            >
+              2-Player
+            </button>
+          </div>
+
+          {gameMode === 'single' && (
+            <div style={styles.selectorWrapper}>
+              <span style={{...styles.inactiveTab, paddingRight: 4, cursor: 'default', color: 'var(--color-text)'}}>You:</span>
+              <button 
+                style={playerPiece === 'X' ? styles.activeTab : styles.inactiveTab}
+                onClick={() => handlePlayerPieceChange('X')}
+              >
+                X
+              </button>
+              <button 
+                style={playerPiece === 'O' ? styles.activeTab : styles.inactiveTab}
+                onClick={() => handlePlayerPieceChange('O')}
+              >
+                O
+              </button>
+            </div>
+          )}
+
+          <div style={styles.selectorWrapper}>
+            <span style={{...styles.inactiveTab, paddingRight: 4, cursor: 'default', color: 'var(--color-text)'}}>Start:</span>
+            <button 
+              style={firstTurn === 'X' ? styles.activeTab : styles.inactiveTab}
+              onClick={() => handleFirstTurnChange('X')}
+            >
+              X
+            </button>
+            <button 
+              style={firstTurn === 'O' ? styles.activeTab : styles.inactiveTab}
+              onClick={() => handleFirstTurnChange('O')}
+            >
+              O
+            </button>
+          </div>
+        </div>
+
+        {gameMode === 'single' && (
+          <DifficultySelector current={difficulty} onChange={handleDifficultyChange} />
+        )}
+
+        {/* Turn Indicator for Multiplayer */}
+        {gameMode === 'multi' && !winnerInfo && (
+          <div style={styles.turnIndicator}>
+            Player {currentTurn}'s Turn
+          </div>
+        )}
         
         {winnerInfo ? (
           <div style={{animation: 'fadeIn 0.5s', width: '100%', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <div style={styles.resultBox}>
-              <h2>
-                {winnerInfo.winner === 'X' ? 'You Won!' : winnerInfo.winner === 'O' ? 'AI Won!' : 'It\'s a Draw!'}
-              </h2>
+              <h2>{getWinnerText()}</h2>
               <button style={styles.replayBtn} onClick={resetGame}>Play Again</button>
             </div>
           </div>
@@ -119,7 +218,7 @@ export default function TicTacToe() {
                       color: cell === 'X' ? 'var(--color-primary-dark)' : 'var(--color-text)',
                       backgroundColor: winnerInfo?.line?.includes(idx) ? 'var(--color-primary-alpha)' : 'var(--color-surface)',
                     }}
-                    disabled={!!cell || !!winnerInfo || !isPlayerTurn}
+                    disabled={!!cell || !!winnerInfo || (gameMode === 'single' && currentTurn !== playerPiece)}
                   >
                     {cell}
                   </button>
@@ -142,6 +241,47 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
+  },
+  controlsRow: {
+    display: 'flex',
+    gap: '16px',
+    marginBottom: '16px',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    animation: 'fadeIn 0.3s ease-out',
+  },
+  selectorWrapper: {
+    display: 'flex',
+    backgroundColor: 'var(--color-surface)',
+    borderRadius: 'var(--radius-full)',
+    padding: '4px',
+    boxShadow: 'var(--shadow-sm)',
+  },
+  activeTab: {
+    padding: '8px 16px',
+    borderRadius: 'var(--radius-full)',
+    backgroundColor: 'var(--color-primary)',
+    color: '#fff',
+    fontWeight: 600,
+    fontSize: '14px',
+    transition: 'var(--transition-fast)',
+  },
+  inactiveTab: {
+    padding: '8px 16px',
+    borderRadius: 'var(--radius-full)',
+    backgroundColor: 'transparent',
+    color: 'var(--color-text-muted)',
+    fontWeight: 600,
+    fontSize: '14px',
+    transition: 'var(--transition-fast)',
+  },
+  turnIndicator: {
+    textAlign: 'center',
+    fontWeight: 600,
+    fontSize: '18px',
+    marginBottom: '16px',
+    color: 'var(--color-text)',
+    animation: 'fadeIn 0.3s',
   },
   gameArea: {
     display: 'flex',

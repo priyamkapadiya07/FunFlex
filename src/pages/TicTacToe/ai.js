@@ -14,40 +14,42 @@ export function checkWinner(board) {
   return null;
 }
 
-function minimax(board, depth, isMaximizing) {
-  const result = checkWinner(board);
-  if (result) {
-    if (result.winner === 'O') return 10 - depth;
-    if (result.winner === 'X') return depth - 10;
-    return 0; // draw
+export function getAIMove(board, difficulty, aiPiece = 'O') {
+  const playerPiece = aiPiece === 'X' ? 'O' : 'X';
+
+  function minimax(board, depth, isMaximizing) {
+    const result = checkWinner(board);
+    if (result) {
+      if (result.winner === aiPiece) return 10 - depth;
+      if (result.winner === playerPiece) return depth - 10;
+      return 0; // draw
+    }
+
+    if (isMaximizing) {
+      let bestScore = -Infinity;
+      for (let i = 0; i < 9; i++) {
+        if (board[i] === null) {
+          board[i] = aiPiece;
+          let score = minimax(board, depth + 1, false);
+          board[i] = null;
+          bestScore = Math.max(score, bestScore);
+        }
+      }
+      return bestScore;
+    } else {
+      let bestScore = Infinity;
+      for (let i = 0; i < 9; i++) {
+        if (board[i] === null) {
+          board[i] = playerPiece;
+          let score = minimax(board, depth + 1, true);
+          board[i] = null;
+          bestScore = Math.min(score, bestScore);
+        }
+      }
+      return bestScore;
+    }
   }
 
-  if (isMaximizing) {
-    let bestScore = -Infinity;
-    for (let i = 0; i < 9; i++) {
-      if (board[i] === null) {
-        board[i] = 'O';
-        let score = minimax(board, depth + 1, false);
-        board[i] = null;
-        bestScore = Math.max(score, bestScore);
-      }
-    }
-    return bestScore;
-  } else {
-    let bestScore = Infinity;
-    for (let i = 0; i < 9; i++) {
-      if (board[i] === null) {
-        board[i] = 'X';
-        let score = minimax(board, depth + 1, true);
-        board[i] = null;
-        bestScore = Math.min(score, bestScore);
-      }
-    }
-    return bestScore;
-  }
-}
-
-export function getAIMove(board, difficulty) {
   const availableMoves = board.map((val, idx) => val === null ? idx : null).filter(val => val !== null);
   if (availableMoves.length === 0) return -1;
 
@@ -71,7 +73,7 @@ export function getAIMove(board, difficulty) {
 
   for (let i = 0; i < 9; i++) {
     if (board[i] === null) {
-      board[i] = 'O';
+      board[i] = aiPiece;
       let score = minimax(board, 0, false);
       board[i] = null;
       if (score > bestScore) {

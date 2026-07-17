@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from '../components/Header';
 import GameCard from '../components/GameCard';
-import { Type, Smile, Hash, Calculator } from 'lucide-react';
+import { Type, Smile, Hash, Calculator, CircleDot } from 'lucide-react';
 
 export default function Home() {
   const games = [
@@ -32,6 +32,13 @@ export default function Home() {
       description: 'Sharpen your brain with rapid-fire equations. Easy to insane.',
       icon: Calculator,
       route: '/mental-math',
+    },
+    {
+      id: 'othello',
+      title: 'Othello (Reversi)',
+      description: 'Classic Reversi game with an intelligent AI opponent. Outsmart the computer!',
+      icon: CircleDot,
+      route: '/othello',
     }
   ];
 

@@ -6,6 +6,7 @@ import WordSearch from './pages/WordSearch/WordSearch';
 import FindEmoji from './pages/FindEmoji/FindEmoji';
 import TicTacToe from './pages/TicTacToe/TicTacToe';
 import MentalMath from './pages/MentalMath/MentalMath';
+import Othello from './pages/Othello/Othello';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/find-emoji" element={<FindEmoji />} />
           <Route path="/tic-tac-toe" element={<TicTacToe />} />
           <Route path="/mental-math" element={<MentalMath />} />
+          <Route path="/othello" element={<Othello />} />
         </Routes>
       </Router>
     </AppProvider>

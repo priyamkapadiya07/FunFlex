@@ -1,0 +1,357 @@
+.othello-container {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.othello-controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.othello-selector-wrapper {
+  display: flex;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  box-shadow: var(--shadow-sm);
+}
+
+.othello-tab-active {
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  transition: var(--transition-fast);
+}
+
+.othello-tab-inactive {
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  font-size: 14px;
+  transition: var(--transition-fast);
+}
+
+.othello-game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.othello-board-wrapper {
+  width: 100%;
+  max-width: 440px; /* enough for 8x8 nicely */
+  padding: 12px;
+  background-color: var(--color-primary-alpha);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  margin-top: 16px;
+}
+
+.othello-board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  gap: 4px;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-md);
+  padding: 4px;
+}
+
+.othello-cell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  perspective: 600px;
+}
+
+.othello-cell.valid-move:hover {
+  background-color: rgba(255, 143, 163, 0.1);
+}
+
+.othello-valid-indicator {
+  width: 25%;
+  height: 25%;
+  border-radius: 50%;
+  background-color: var(--color-primary-alpha);
+  opacity: 0.8;
+  transition: all 0.2s;
+}
+
+.othello-cell.valid-move:hover .othello-valid-indicator {
+  background-color: var(--color-primary);
+  transform: scale(1.2);
+}
+
+.othello-disc-container {
+  width: 85%;
+  height: 85%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 
+  If black, transform = rotateY(0deg)
+  If white, transform = rotateY(180deg) 
+*/
+.othello-disc-container.black {
+  transform: rotateY(0deg);
+}
+
+.othello-disc-container.white {
+  transform: rotateY(180deg);
+}
+
+.othello-disc-side {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  backface-visibility: hidden;
+  box-shadow: inset 0 -4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.othello-disc-black {
+  background: radial-gradient(circle at 30% 30%, #444, #111);
+  transform: rotateY(0deg);
+}
+
+.othello-disc-white {
+  background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+  transform: rotateY(180deg);
+}
+
+.othello-last-move-indicator {
+  position: absolute;
+  width: 12%;
+  height: 12%;
+  background-color: var(--color-primary-dark);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.othello-score-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.othello-score-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--color-surface);
+  padding: 8px 24px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  font-size: 20px;
+  font-weight: 700;
+  transition: transform 0.2s;
+}
+
+.othello-score-box.active {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--color-primary);
+}
+
+.othello-score-disc {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.othello-score-disc.black {
+  background: radial-gradient(circle at 30% 30%, #444, #111);
+}
+
+.othello-score-disc.white {
+  background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+}
+
+.othello-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.3s;
+}
+
+.othello-modal {
+  background-color: var(--color-surface);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.othello-modal h2 {
+  font-size: 28px;
+  color: var(--color-primary-dark);
+  margin-bottom: 16px;
+}
+
+.othello-modal p {
+  font-size: 16px;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.othello-btn-primary {
+  margin-top: 24px;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-fast);
+  cursor: pointer;
+  border: none;
+  width: 100%;
+}
+
+.othello-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background-color: var(--color-primary-dark);
+}
+
+.othello-btn-secondary {
+  margin-top: 12px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background-color: transparent;
+  border: 1px solid var(--color-primary-light);
+  border-radius: var(--radius-full);
+  transition: var(--transition-fast);
+  cursor: pointer;
+  width: 100%;
+}
+
+.othello-btn-secondary:hover {
+  background-color: var(--color-primary-alpha);
+}
+
+.othello-ai-thinking {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--color-surface);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.2s, bounce 1s infinite alternate;
+}
+
+.loader-dots {
+  display: inline-flex;
+  gap: 4px;
+}
+.loader-dots span {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-primary-dark);
+  border-radius: 50%;
+  animation: pulse 1s infinite ease-in-out;
+}
+.loader-dots span:nth-child(1) { animation-delay: -0.3s; }
+.loader-dots span:nth-child(2) { animation-delay: -0.15s; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(0.6); opacity: 0.5; }
+  50% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce {
+  from { transform: translate(-50%, 0); }
+  to { transform: translate(-50%, -5px); }
+}
+
+.othello-toast {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  z-index: 20;
+  text-align: center;
+  pointer-events: none;
+  animation: fadeInOut 2s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -40%); }
+  15% { opacity: 1; transform: translate(-50%, -50%); }
+  85% { opacity: 1; transform: translate(-50%, -50%); }
+  100% { opacity: 0; transform: translate(-50%, -60%); }
+}

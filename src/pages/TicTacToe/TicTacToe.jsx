@@ -12,7 +12,6 @@ export default function TicTacToe() {
   
   const [gameMode, setGameMode] = useState('single'); // 'single' | 'multi'
   const [playerPiece, setPlayerPiece] = useState('X'); // 'X' | 'O' for single player
-  const [firstTurn, setFirstTurn] = useState('X'); // 'X' | 'O' for who starts
 
   const [board, setBoard] = useState(Array(9).fill(null));
   const [currentTurn, setCurrentTurn] = useState('X'); // X always goes first
@@ -42,9 +41,9 @@ export default function TicTacToe() {
     if (soundEnabled) playTicTacToeEnd(isWin);
   };
 
-  const resetGame = (overrideFirstTurn = firstTurn) => {
+  const resetGame = () => {
     setBoard(Array(9).fill(null));
-    setCurrentTurn(overrideFirstTurn);
+    setCurrentTurn('X');
     setWinnerInfo(null);
     window.successSoundPlayedThisRound = false;
   };
@@ -52,17 +51,12 @@ export default function TicTacToe() {
   // When gameMode or playerPiece changes, immediately reset
   const handleGameModeChange = (mode) => {
     setGameMode(mode);
-    resetGame(firstTurn);
+    resetGame();
   };
 
   const handlePlayerPieceChange = (piece) => {
     setPlayerPiece(piece);
-    resetGame(firstTurn);
-  };
-
-  const handleFirstTurnChange = (piece) => {
-    setFirstTurn(piece);
-    resetGame(piece);
+    resetGame();
   };
 
   const handleCellClick = (index) => {
@@ -169,22 +163,6 @@ export default function TicTacToe() {
               </button>
             </div>
           )}
-
-          <div style={styles.selectorWrapper}>
-            <span style={{...styles.inactiveTab, paddingRight: 4, cursor: 'default', color: 'var(--color-text)'}}>Start:</span>
-            <button 
-              style={firstTurn === 'X' ? styles.activeTab : styles.inactiveTab}
-              onClick={() => handleFirstTurnChange('X')}
-            >
-              X
-            </button>
-            <button 
-              style={firstTurn === 'O' ? styles.activeTab : styles.inactiveTab}
-              onClick={() => handleFirstTurnChange('O')}
-            >
-              O
-            </button>
-          </div>
         </div>
 
         {gameMode === 'single' && (
@@ -198,32 +176,41 @@ export default function TicTacToe() {
           </div>
         )}
         
-        {winnerInfo ? (
-          <div style={{animation: 'fadeIn 0.5s', width: '100%', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-            <div style={styles.resultBox}>
-              <h2>{getWinnerText()}</h2>
-              <button style={styles.replayBtn} onClick={resetGame}>Play Again</button>
+        <div style={styles.gameArea}>
+          <div style={styles.boardContainer}>
+            <div style={styles.board}>
+              {board.map((cell, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleCellClick(idx)}
+                  style={{
+                    ...styles.cell,
+                    color: cell === 'X' ? 'var(--color-primary-dark)' : 'var(--color-text)',
+                    backgroundColor: winnerInfo?.line?.includes(idx) ? 'var(--color-primary-alpha)' : 'var(--color-surface)',
+                  }}
+                  disabled={!!cell || !!winnerInfo || (gameMode === 'single' && currentTurn !== playerPiece)}
+                >
+                  {cell}
+                </button>
+              ))}
             </div>
           </div>
-        ) : (
-          <div style={styles.gameArea}>
-            <div style={styles.boardContainer}>
-              <div style={styles.board}>
-                {board.map((cell, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleCellClick(idx)}
-                    style={{
-                      ...styles.cell,
-                      color: cell === 'X' ? 'var(--color-primary-dark)' : 'var(--color-text)',
-                      backgroundColor: winnerInfo?.line?.includes(idx) ? 'var(--color-primary-alpha)' : 'var(--color-surface)',
-                    }}
-                    disabled={!!cell || !!winnerInfo || (gameMode === 'single' && currentTurn !== playerPiece)}
-                  >
-                    {cell}
-                  </button>
-                ))}
-              </div>
+        </div>
+
+        {winnerInfo && (
+          <div style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 999,
+            animation: 'fadeIn 0.5s',
+            pointerEvents: 'auto',
+          }}>
+            <div style={styles.resultBox}>
+              <h2>{getWinnerText()}</h2>
+              <button style={styles.replayBtn} onClick={() => resetGame()}>Play Again</button>
             </div>
           </div>
         )}

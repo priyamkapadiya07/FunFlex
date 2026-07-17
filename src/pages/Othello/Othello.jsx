@@ -9,7 +9,7 @@ import { recordGameResult } from './utils/statistics';
 import { playOthelloFlip, playOthelloPlace, playOthelloEnd } from '../../utils/audio';
 import AiWorker from './logic/aiWorker?worker';
 import './Othello.css';
-import { Undo2, RotateCcw } from 'lucide-react';
+import { Undo2, RotateCcw, Info } from 'lucide-react';
 export default function Othello() {
   const [difficulty, setDifficulty] = useDifficulty('othello', 'Medium');
   const { soundEnabled } = useAppContext();
@@ -27,6 +27,7 @@ export default function Othello() {
   const [isAiThinking, setIsAiThinking] = useState(false);
   const [winnerInfo, setWinnerInfo] = useState(null);
   const [turnSkippedMessage, setTurnSkippedMessage] = useState('');
+  const [showRules, setShowRules] = useState(false);
 
   const workerRef = useRef(null);
 
@@ -218,7 +219,16 @@ export default function Othello() {
   return (
     <>
       <Header />
-      <main className="othello-container">
+      <main className="othello-container" style={{ position: 'relative' }}>
+        
+        <button 
+          className="othello-btn-secondary"
+          onClick={() => setShowRules(true)}
+          title="Game Rules"
+          style={{ position: 'absolute', top: 16, right: 16, width: 30, height: 30, padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}
+        >
+          <Info size={24} />
+        </button>
 
         {/* Top Controls */}
         <div className="othello-controls">
@@ -325,6 +335,25 @@ export default function Othello() {
               {gameMode === 'single' && <p>Difficulty: {difficulty}</p>}
               <button className="othello-btn-primary" onClick={resetGame}>Play Again</button>
               <button className="othello-btn-secondary" onClick={() => window.history.back()}>Exit</button>
+            </div>
+          </div>
+        )}
+
+        {showRules && (
+          <div className="othello-modal-overlay">
+            <div className="othello-modal" style={{ textAlign: 'left', maxWidth: '400px' }}>
+              <h2 style={{ textAlign: 'center', marginBottom: 16 }}>How to Play</h2>
+              <ul style={{ paddingLeft: 20, marginBottom: 24, lineHeight: '1.6', color: 'var(--color-text)' }}>
+                <li><strong>Goal:</strong> Have the majority of discs displaying your color when the board is full.</li>
+                <li><strong>Placing:</strong> You must place a disc on the board so that one or more of your opponent's discs are trapped or sandwiched in a straight line between your newly placed disc and another disc of your color.</li>
+                <li><strong>Flipping:</strong> All flanked opponent discs flip to your color.</li>
+                <li><strong>Passing:</strong> If you cannot make a valid move that flanks and flips an opponent's disc, your turn is automatically skipped.</li>
+                <li><strong>End Game:</strong> The game ends when neither player has a valid move.</li>
+                <li><strong>More Info:</strong> Visit <a href="http://worldothello.org/about/about-othello/othello-rules/official-rules/english" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)' }}>Reversi</a></li>
+              </ul>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <button className="othello-btn-primary" onClick={() => setShowRules(false)}>Got it!</button>
+              </div>
             </div>
           </div>
         )}

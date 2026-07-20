@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from '../components/Header';
 import GameCard from '../components/GameCard';
-import { Type, Smile, Hash, Calculator, CircleDot } from 'lucide-react';
+import { Type, Smile, Hash, Calculator, CircleDot, Target } from 'lucide-react';
 
 export default function Home() {
   const games = [
@@ -39,6 +39,13 @@ export default function Home() {
       description: 'Classic Reversi game with an intelligent AI opponent. Outsmart the computer!',
       icon: CircleDot,
       route: '/othello',
+    },
+    {
+      id: 'billiards',
+      title: 'Premium Billiards',
+      description: 'Relaxing classic physics or mind-bending trick shots. Fully offline.',
+      icon: Target,
+      route: '/billiards',
     }
   ];
 

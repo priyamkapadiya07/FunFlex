@@ -8,6 +8,8 @@ import TicTacToe from './pages/TicTacToe/TicTacToe';
 import MentalMath from './pages/MentalMath/MentalMath';
 import Othello from './pages/Othello/Othello';
 
+import Billiards from './pages/Billiards/Billiards';
+
 function App() {
   return (
     <AppProvider>
@@ -19,6 +21,7 @@ function App() {
           <Route path="/tic-tac-toe" element={<TicTacToe />} />
           <Route path="/mental-math" element={<MentalMath />} />
           <Route path="/othello" element={<Othello />} />
+          <Route path="/billiards" element={<Billiards />} />
         </Routes>
       </Router>
     </AppProvider>

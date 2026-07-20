@@ -1,15 +1,24 @@
 # FunFlex - Brain Games PWA
 
-FunFlex is a beautiful, minimalist, and lightweight Progressive Web App (PWA) dedicated to relaxing brain games. It currently features an infinite, dynamically-generated Word Search game with five difficulty levels.
+FunFlex is a beautiful, minimalist, and lightweight Progressive Web App (PWA) dedicated to relaxing brain games. It features a dynamically-generated, offline-capable collection of puzzles and board games with multiple difficulty levels.
+
+## Games Included
+
+1. **Word Search**: Find hidden words in an infinitely generating grid. Relaxing and infinite.
+2. **Find the Emoji**: Spot the odd emoji out in a massive grid before your eyes cross.
+3. **Tic-Tac-Toe**: Classic game with an AI opponent ranging from silly to mathematically impossible.
+4. **Mental Math**: Sharpen your brain with rapid-fire equations across multiple difficulties.
+5. **Othello (Reversi)**: Outsmart an intelligent AI opponent in this classic premium-feel board game.
+6. **Premium Billiards**: A custom-built 2D physics engine offering a relaxing classic mode or mind-bending, procedurally generated trick shots.
 
 ## Features
 
 - **Progressive Web App (PWA)**: Installable on Android, iOS, Windows, and macOS.
 - **Offline Capable**: Once loaded for the first time, all assets and dictionaries are cached locally. You can play without an internet connection indefinitely.
 - **Beautiful & Fast UI**: Built with Vite and React for instant load times, featuring a "soft pink" elegant aesthetic and buttery smooth interactions.
-- **Generative Gameplay**: Puzzles are generated dynamically from built-in JSON dictionaries. No two games are exactly alike.
+- **Generative Gameplay**: Puzzles are generated dynamically from built-in logic. No two games are exactly alike.
 - **Premium Sounds**: Satisfying synthesized pops and chimes powered natively by the Web Audio API (no heavy audio files).
-- **No Backend**: All user preferences (theme, difficulty, sound toggle) are saved locally using `localStorage`.
+- **No Backend**: All user preferences (theme, difficulty, sound toggle) and game data are saved locally using `localStorage`.
 
 ## Local Development
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Header from '../../components/Header';
 import DifficultySelector from '../../components/DifficultySelector';
 import SuccessScreen from '../../components/SuccessScreen';
@@ -22,6 +22,13 @@ export default function WordSearch() {
   const [foundCoordinates, setFoundCoordinates] = useState([]); // Array of coordinate arrays
   const [hintedCells, setHintedCells] = useState([]);
 
+  const isMounted = useRef(true);
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   const loadPuzzle = useCallback(async (diff) => {
     setLoading(true);
     setFoundWordStrings([]);
@@ -34,8 +41,10 @@ export default function WordSearch() {
       new Promise(res => setTimeout(res, 200))
     ]);
     
-    setGridData(data);
-    setLoading(false);
+    if (isMounted.current) {
+      setGridData(data);
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -146,6 +155,13 @@ export default function WordSearch() {
 
   const isComplete = gridData && gridData.wordsToFind.length > 0 && foundWordStrings.length === gridData.wordsToFind.length;
 
+  useEffect(() => {
+    if (isComplete && soundEnabled && !window.successSoundPlayedThisRound) {
+      window.successSoundPlayedThisRound = true;
+      setTimeout(playSuccessSound, 100);
+    }
+  }, [isComplete, soundEnabled]);
+
   return (
     <>
       <Header />
@@ -159,14 +175,6 @@ export default function WordSearch() {
           </div>
         ) : isComplete ? (
           <div style={{animation: 'fadeIn 0.5s'}}>
-            {/* Play success sound once when completed */}
-            {(() => {
-              if (soundEnabled && !window.successSoundPlayedThisRound) {
-                window.successSoundPlayedThisRound = true;
-                setTimeout(playSuccessSound, 100);
-              }
-              return null;
-            })()}
             <SuccessScreen 
               onNext={() => {
                 window.successSoundPlayedThisRound = false;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Header from '../../components/Header';
 import DifficultySelector from '../../components/DifficultySelector';
 import SuccessScreen from '../../components/SuccessScreen';
@@ -24,6 +24,21 @@ export default function FindEmoji() {
   useEffect(() => {
     loadPuzzle(difficulty);
   }, [difficulty, loadPuzzle]);
+
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isComplete && soundEnabled && !window.successSoundPlayedThisRound) {
+      window.successSoundPlayedThisRound = true;
+      setTimeout(playSuccessSound, 100);
+    }
+  }, [isComplete, soundEnabled]);
 
   // Disable pull-to-refresh on mobile while playing the game
   useEffect(() => {
@@ -62,7 +77,8 @@ export default function FindEmoji() {
     } else {
       if (soundEnabled) playErrorSound();
       setWrongAnimation(cell.id);
-      setTimeout(() => setWrongAnimation(null), 400); // clear animation
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setWrongAnimation(null), 400); // clear animation
     }
   };
 
@@ -74,13 +90,6 @@ export default function FindEmoji() {
         
         {isComplete ? (
           <div style={{animation: 'fadeIn 0.5s'}}>
-            {(() => {
-              if (soundEnabled && !window.successSoundPlayedThisRound) {
-                window.successSoundPlayedThisRound = true;
-                setTimeout(playSuccessSound, 100);
-              }
-              return null;
-            })()}
             <SuccessScreen 
               onNext={() => {
                 window.successSoundPlayedThisRound = false;

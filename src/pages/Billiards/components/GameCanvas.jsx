@@ -54,6 +54,7 @@ export default function GameCanvas({ mode, difficulty, soundEnabled, onMenu }) {
   const ballsRef = useRef([]);
   const aimRef = useRef({ active: false, startX: 0, startY: 0, currX: 0, currY: 0 });
   const isMovingRef = useRef(false);
+  const timeoutRef = useRef([]);
   const [scale, setScale] = useState(1);
   const [isPortrait, setIsPortrait] = useState(false);
 
@@ -272,18 +273,20 @@ export default function GameCanvas({ mode, difficulty, soundEnabled, onMenu }) {
             playSound('win', soundEnabled);
           } else if (pocketedBall.type === 'cue' || pocketedBall.type === 'obstacle') {
             // Failed, restart trick shot
-            setTimeout(() => initLevel(), 500);
+            const tid = setTimeout(() => initLevel(), 500);
+            timeoutRef.current.push(tid);
           }
         } else if (mode === 'classic') {
           if (pocketedBall.type === 'cue') {
             // Scratch! Respawn cue ball at the starting position
-            setTimeout(() => {
+            const tid = setTimeout(() => {
               pocketedBall.active = true;
               pocketedBall.vx = 0;
               pocketedBall.vy = 0;
               pocketedBall.x = TABLE_WIDTH * 0.25;
               pocketedBall.y = TABLE_HEIGHT / 2;
             }, 500);
+            timeoutRef.current.push(tid);
           } else {
             // Check win condition for Classic Mode
             const remainingBalls = ballsRef.current.filter(b => b.type !== 'cue' && b.active);
@@ -310,6 +313,8 @@ export default function GameCanvas({ mode, difficulty, soundEnabled, onMenu }) {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      timeoutRef.current.forEach(clearTimeout);
+      timeoutRef.current = [];
     };
   }, [mode, difficulty, soundEnabled]);
 

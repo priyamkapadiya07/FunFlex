@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Header from '../../components/Header';
 import DifficultySelector from '../../components/DifficultySelector';
 import { useDifficulty } from '../../hooks/useDifficulty';
@@ -26,6 +26,14 @@ export default function MentalMath() {
     setStreak(0);
     loadPuzzle(difficulty);
   }, [difficulty, loadPuzzle]);
+
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     document.documentElement.style.overscrollBehavior = 'none';
@@ -57,12 +65,14 @@ export default function MentalMath() {
       playPopSound();
       setCorrectAnimation(idx);
       setStreak(s => s + 1);
-      setTimeout(() => loadPuzzle(difficulty), 300); // Load next quickly
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => loadPuzzle(difficulty), 300); // Load next quickly
     } else {
       playErrorSound();
       setWrongAnimation(idx);
       setStreak(0);
-      setTimeout(() => setWrongAnimation(null), 400); // clear animation
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setWrongAnimation(null), 400); // clear animation
     }
   };
 

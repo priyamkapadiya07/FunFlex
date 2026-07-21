@@ -122,15 +122,18 @@ export default function Othello() {
       if (!isGameOver(board)) {
         const playerName = currentTurn === 'B' ? 'Black' : 'White';
         setTurnSkippedMessage(`${playerName} has no valid moves! Skipping turn...`);
-        setTimeout(() => {
+        const timer = setTimeout(() => {
           setTurnSkippedMessage('');
-          setCurrentTurn(currentTurn === 'B' ? 'W' : 'B');
+          const nextTurn = currentTurn === 'B' ? 'W' : 'B';
+          setCurrentTurn(nextTurn);
+          setHistory(prev => [...prev, { board, turn: nextTurn, lastMove }]);
         }, 4000);
+        return () => clearTimeout(timer);
       } else {
         handleGameOver(board);
       }
     }
-  }, [board, currentTurn, winnerInfo]);
+  }, [board, currentTurn, winnerInfo, lastMove]);
 
   const handleGameOver = useCallback((finalBoard) => {
     const finalScores = countScore(finalBoard);
@@ -195,7 +198,7 @@ export default function Othello() {
 
       return () => clearTimeout(timer);
     }
-  }, [currentTurn, gameMode, playerColor, winnerInfo, difficulty]);
+  }, [currentTurn, gameMode, playerColor, winnerInfo, difficulty, validMoves]);
 
   useEffect(() => {
     if (winnerInfo && soundEnabled && !window.othelloSuccessSoundPlayed) {

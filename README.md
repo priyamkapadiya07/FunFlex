@@ -1,76 +1,50 @@
-# FunFlex - Brain Games PWA
+# FunFlex
 
-FunFlex is a beautiful, minimalist, and lightweight Progressive Web App (PWA) dedicated to relaxing brain games. It features a dynamically-generated, offline-capable collection of puzzles and board games with multiple difficulty levels.
+Welcome to **FunFlex** – a web-based gaming platform!
 
-## Games Included
+Currently featuring our flagship game: **Shadow Hunter**.
 
-1. **Word Search**: Find hidden words in an infinitely generating grid. Relaxing and infinite.
-2. **Find the Emoji**: Spot the odd emoji out in a massive grid before your eyes cross.
-3. **Tic-Tac-Toe**: Classic game with an AI opponent ranging from silly to mathematically impossible.
-4. **Mental Math**: Sharpen your brain with rapid-fire equations across multiple difficulties.
-5. **Othello (Reversi)**: Outsmart an intelligent AI opponent in this classic premium-feel board game.
-6. **Premium Billiards**: A custom-built 2D physics engine offering a relaxing classic mode or mind-bending, procedurally generated trick shots.
+---
 
-## Features
+## 🎮 Shadow Hunter
 
-- **Progressive Web App (PWA)**: Installable on Android, iOS, Windows, and macOS.
-- **Offline Capable**: Once loaded for the first time, all assets and dictionaries are cached locally. You can play without an internet connection indefinitely.
-- **Beautiful & Fast UI**: Built with Vite and React for instant load times, featuring a "soft pink" elegant aesthetic and buttery smooth interactions.
-- **Generative Gameplay**: Puzzles are generated dynamically from built-in logic. No two games are exactly alike.
-- **Premium Sounds**: Satisfying synthesized pops and chimes powered natively by the Web Audio API (no heavy audio files).
-- **No Backend**: All user preferences (theme, difficulty, sound toggle) and game data are saved locally using `localStorage`.
+**Shadow Hunter** is a thrilling 2D top-down horror survival game built with React and HTML5 Canvas. You are trapped in a pitch-black facility with only a flashlight. Your mission is to navigate the darkness, survive the lurking horrors, and restore power to the facility.
 
-## Local Development
+### 🎯 Objectives
+1. **Find the Generator**: Search the procedurally generated maze for the main power generator (a glowing yellow orb).
+2. **Survive the Darkness**: Beware of the Shadow Walkers (glowing red eyes). They will hunt you in the dark. Shoot them before they get too close!
 
-To run the project locally on your machine:
+### 🕹️ Controls
 
-1. **Install dependencies:**
+**Desktop / Laptop:**
+- **W, A, S, D**: Move your character
+- **Mouse / Cursor**: Aim your flashlight and weapon
+- **Left Click**: Shoot your equipped weapon
+
+**Mobile / Tablet:**
+- *Please play in Landscape orientation for the best experience.*
+- **Left Joystick**: Move your character around the maze
+- **Right Joystick**: Aim your flashlight and weapon
+- **Red Crosshair Button**: Fire your weapon (can be tapped while aiming)
+
+---
+
+## 🚀 Getting Started Locally
+
+To run the game on your own machine:
+
+1. Install dependencies:
    ```bash
    npm install
    ```
-
-2. **Start the development server:**
+2. Start the development server:
    ```bash
    npm run dev
    ```
+3. Open your browser to `http://localhost:5173`
 
-3. **Build for production:**
-   ```bash
-   npm run build
-   ```
-   *This command will bundle the app and generate the PWA service worker inside the `dist` folder.*
-
-4. **Preview the production build:**
-   ```bash
-   npm run preview
-   ```
-
-## How to Deploy to Vercel
-
-Deploying FunFlex to Vercel is incredibly simple because Vercel automatically detects Vite projects.
-
-1. **Push your code to a Git Repository**:
-   Upload this entire project folder to a repository on GitHub, GitLab, or Bitbucket.
-
-2. **Import into Vercel**:
-   - Log into your [Vercel Dashboard](https://vercel.com/dashboard).
-   - Click **Add New... -> Project**.
-   - Select your Git repository from the list.
-
-3. **Configure Deployment**:
-   Vercel will automatically detect that this is a **Vite** project. 
-   - **Framework Preset**: Vite
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-   *You shouldn't need to change anything.*
-
-4. **Deploy**:
-   Click **Deploy**. Vercel will build the app, generate the `dist` folder, and serve your PWA globally on their edge network in just a few seconds.
-
-## Updating the App Icon
-
-The primary icon for the app is `public/icon.svg`. If you edit this file, you can regenerate the perfectly-sized PNG manifests for iOS and Android by running:
-```bash
-node generate-icons.js
-```
-*(Requires `sharp` to be installed via `npm install sharp`)*
+## 🛠️ Technology Stack
+- **React 18** for UI and state management
+- **Zustand** for high-performance game state handling
+- **HTML5 Canvas API** for the 2D rendering engine
+- **React Router** for seamless page navigation

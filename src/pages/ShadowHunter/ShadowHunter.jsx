@@ -46,10 +46,10 @@ export default function ShadowHunter() {
   // Init Map (Walls)
   useEffect(() => {
     // Also re-init state when game resets
-    if (gameOver || gameWon) return; 
+    if (gameOver || gameWon) return;
 
     const state = gameState.current;
-    
+
     // Reset player position and state
     state.player.x = MAP_WIDTH * TILE_SIZE / 2;
     state.player.y = MAP_HEIGHT * TILE_SIZE / 2;
@@ -58,7 +58,7 @@ export default function ShadowHunter() {
     state.bullets = [];
 
     state.walls = [];
-    
+
     // Outer boundaries
     state.walls.push({ x: 0, y: 0, width: MAP_WIDTH * TILE_SIZE, height: TILE_SIZE });
     state.walls.push({ x: 0, y: 0, width: TILE_SIZE, height: MAP_HEIGHT * TILE_SIZE });
@@ -77,7 +77,7 @@ export default function ShadowHunter() {
 
     // Spawn some initial enemies
     for (let i = 0; i < 5; i++) {
-       spawnEnemy(state);
+      spawnEnemy(state);
     }
   }, []);
 
@@ -110,7 +110,7 @@ export default function ShadowHunter() {
       if (key === 'd') gameState.current.keys.d = false;
       if (key === 'shift') gameState.current.keys.shift = false;
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     return () => {
@@ -159,7 +159,7 @@ export default function ShadowHunter() {
       if (cy < ry) testY = ry; else if (cy > ry + rh) testY = ry + rh;
       let distX = cx - testX;
       let distY = cy - testY;
-      let distance = Math.sqrt((distX*distX) + (distY*distY));
+      let distance = Math.sqrt((distX * distX) + (distY * distY));
       return distance <= cr;
     };
 
@@ -167,7 +167,7 @@ export default function ShadowHunter() {
       const state = gameState.current;
       const delta = (now - state.lastTime) / 1000;
       state.lastTime = now;
-      
+
       // Prevent massive jumps if tab is backgrounded
       if (delta > 0.1) {
         animationId = requestAnimationFrame(loop);
@@ -175,23 +175,25 @@ export default function ShadowHunter() {
       }
 
       const p = state.player;
-      
-      // Update camera dimensions to match resize
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+
+      // Update camera dimensions to match resize and forced rotation
+      const isCurrentlyPortrait = window.innerHeight > window.innerWidth;
+      const forceRotate = isTouchDevice && isCurrentlyPortrait;
+      canvas.width = forceRotate ? window.innerHeight : window.innerWidth;
+      canvas.height = forceRotate ? window.innerWidth : window.innerHeight;
 
       // Get latest mobile inputs without triggering React re-renders
       const { mobileMove, mobileLook, mobileShoot } = useGameStore.getState();
-      
+
       // --- INPUT LOGIC ---
       let vx = 0, vy = 0;
-      
+
       // Keyboard
       if (state.keys.w) vy -= 1;
       if (state.keys.s) vy += 1;
       if (state.keys.a) vx -= 1;
       if (state.keys.d) vx += 1;
-      
+
       // Mobile Move Joystick
       if (mobileMove.x !== 0 || mobileMove.y !== 0) {
         vx = mobileMove.x;
@@ -199,12 +201,12 @@ export default function ShadowHunter() {
       }
 
       if (vx !== 0 || vy !== 0) {
-        const len = Math.sqrt(vx*vx + vy*vy);
+        const len = Math.sqrt(vx * vx + vy * vy);
         vx /= len; vy /= len;
       }
 
       const speed = GAME_SPEED * (state.keys.shift ? SPRINT_MULTIPLIER : 1);
-      
+
       let nextX = p.x + vx * speed * delta;
       let nextY = p.y + vy * speed * delta;
 
@@ -214,7 +216,7 @@ export default function ShadowHunter() {
         if (circleRectCollide(nextX, p.y, p.radius, w.x, w.y, w.width, w.height)) hitX = true;
         if (circleRectCollide(p.x, nextY, p.radius, w.x, w.y, w.width, w.height)) hitY = true;
       }
-      
+
       if (!hitX) p.x = nextX;
       if (!hitY) p.y = nextY;
 
@@ -249,24 +251,24 @@ export default function ShadowHunter() {
       // --- ENEMY LOGIC ---
       state.spawnTimer += delta;
       if (state.spawnTimer > 5) {
-         state.spawnTimer = 0;
-         spawnEnemy(state);
+        state.spawnTimer = 0;
+        spawnEnemy(state);
       }
 
       for (let i = state.enemies.length - 1; i >= 0; i--) {
         const e = state.enemies[i];
         const dx = p.x - e.x;
         const dy = p.y - e.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
         // Chase player
         if (dist > 0 && dist < 1200) {
           const evx = (dx / dist) * ENEMY_SPEED * delta;
           const evy = (dy / dist) * ENEMY_SPEED * delta;
-          
+
           let enextX = e.x + evx;
           let enextY = e.y + evy;
-          
+
           let ehitX = false, ehitY = false;
           for (const w of state.walls) {
             if (circleRectCollide(enextX, e.y, e.radius, w.x, w.y, w.width, w.height)) ehitX = true;
@@ -278,7 +280,7 @@ export default function ShadowHunter() {
 
         // Damage Player
         if (dist < p.radius + e.radius && !gameOver && !gameWon) {
-           takeDamage(20 * delta); // continuous damage
+          takeDamage(20 * delta); // continuous damage
         }
       }
 
@@ -288,10 +290,10 @@ export default function ShadowHunter() {
         b.x += b.vx * delta;
         b.y += b.vy * delta;
         b.life -= delta;
-        
+
         let remove = false;
         if (b.life <= 0) remove = true;
-        
+
         // Wall collision
         for (const w of state.walls) {
           if (b.x > w.x && b.x < w.x + w.width && b.y > w.y && b.y < w.y + w.height) {
@@ -306,28 +308,28 @@ export default function ShadowHunter() {
             const e = state.enemies[j];
             const dx = b.x - e.x;
             const dy = b.y - e.y;
-            if (Math.sqrt(dx*dx + dy*dy) < e.radius + 5) {
-               e.hp -= 50;
-               remove = true;
-               if (e.hp <= 0) {
-                 if (soundEnabled) playMonsterHit();
-                 state.enemies.splice(j, 1);
-               }
-               break;
+            if (Math.sqrt(dx * dx + dy * dy) < e.radius + 5) {
+              e.hp -= 50;
+              remove = true;
+              if (e.hp <= 0) {
+                if (soundEnabled) playMonsterHit();
+                state.enemies.splice(j, 1);
+              }
+              break;
             }
           }
         }
-        
+
         // Generator collision
         if (!remove && !state.generator.active) {
-           const g = state.generator;
-           if (b.x > g.x && b.x < g.x + g.width && b.y > g.y && b.y < g.y + g.height) {
-              remove = true;
-              state.generator.active = true;
-              completeObjective('1');
-              completeObjective('2');
-              setTimeout(() => setGameWon(true), 2500);
-           }
+          const g = state.generator;
+          if (b.x > g.x && b.x < g.x + g.width && b.y > g.y && b.y < g.y + g.height) {
+            remove = true;
+            state.generator.active = true;
+            completeObjective('1');
+            completeObjective('2');
+            setTimeout(() => setGameWon(true), 2500);
+          }
         }
 
         if (remove) state.bullets.splice(i, 1);
@@ -349,21 +351,21 @@ export default function ShadowHunter() {
       // Draw Generator
       const g = state.generator;
       if (g.active) {
-         ctx.fillStyle = '#00ff00';
-         ctx.shadowColor = '#00ff00';
-         ctx.shadowBlur = 40;
-         ctx.fillRect(g.x, g.y, g.width, g.height);
-         ctx.shadowBlur = 0;
+        ctx.fillStyle = '#00ff00';
+        ctx.shadowColor = '#00ff00';
+        ctx.shadowBlur = 40;
+        ctx.fillRect(g.x, g.y, g.width, g.height);
+        ctx.shadowBlur = 0;
       } else {
-         ctx.fillStyle = '#333';
-         ctx.fillRect(g.x, g.y, g.width, g.height);
-         ctx.fillStyle = '#ffff00';
-         ctx.shadowColor = '#ffff00';
-         ctx.shadowBlur = 10;
-         ctx.beginPath();
-         ctx.arc(g.x + g.width/2, g.y + g.height/2, 10, 0, Math.PI * 2);
-         ctx.fill();
-         ctx.shadowBlur = 0;
+        ctx.fillStyle = '#333';
+        ctx.fillRect(g.x, g.y, g.width, g.height);
+        ctx.fillStyle = '#ffff00';
+        ctx.shadowColor = '#ffff00';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(g.x + g.width / 2, g.y + g.height / 2, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
       }
 
 
@@ -377,9 +379,9 @@ export default function ShadowHunter() {
       // Draw Bullets
       ctx.fillStyle = '#fff';
       for (const b of state.bullets) {
-         ctx.beginPath();
-         ctx.arc(b.x, b.y, 3, 0, Math.PI*2);
-         ctx.fill();
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, 3, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       ctx.restore();
@@ -391,16 +393,16 @@ export default function ShadowHunter() {
         maskCanvas.width = canvas.width;
         maskCanvas.height = canvas.height;
         const mCtx = maskCanvas.getContext('2d');
-        
+
         mCtx.fillStyle = 'rgba(0, 0, 0, 0.99)';
         mCtx.fillRect(0, 0, canvas.width, canvas.height);
-        
+
         mCtx.globalCompositeOperation = 'destination-out';
-        
+
         // Create gradient cone
         const playerScreenX = canvas.width / 2;
         const playerScreenY = canvas.height / 2;
-        
+
         const grad = mCtx.createRadialGradient(
           playerScreenX, playerScreenY, 0,
           playerScreenX, playerScreenY, 500
@@ -416,7 +418,7 @@ export default function ShadowHunter() {
         mCtx.arc(playerScreenX, playerScreenY, 500, p.angle - 0.6, p.angle + 0.6);
         mCtx.lineTo(playerScreenX, playerScreenY);
         mCtx.fill();
-        
+
         // Small ambient circle around player
         const ambient = mCtx.createRadialGradient(
           playerScreenX, playerScreenY, 0,
@@ -427,9 +429,9 @@ export default function ShadowHunter() {
         ambient.addColorStop(1, 'rgba(255,255,255,0)');
         mCtx.fillStyle = ambient;
         mCtx.beginPath();
-        mCtx.arc(playerScreenX, playerScreenY, 100, 0, Math.PI*2);
+        mCtx.arc(playerScreenX, playerScreenY, 100, 0, Math.PI * 2);
         mCtx.fill();
-        
+
         ctx.drawImage(maskCanvas, 0, 0);
       }
 
@@ -437,22 +439,22 @@ export default function ShadowHunter() {
       ctx.save();
       ctx.translate(-state.camera.x, -state.camera.y);
       for (const e of state.enemies) {
-         ctx.fillStyle = '#222';
-         ctx.beginPath();
-         ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
-         ctx.fill();
-         
-         // Glowing red eyes (blinking)
-         const blink = (Math.sin(Date.now() / 150) + 1) / 2;
-         ctx.fillStyle = `rgba(255, 0, 0, ${0.4 + blink * 0.6})`;
-         const eyeDist = 8;
-         const eyeAngle1 = Math.atan2(p.y - e.y, p.x - e.x) - 0.4;
-         const eyeAngle2 = Math.atan2(p.y - e.y, p.x - e.x) + 0.4;
-         
-         ctx.beginPath();
-         ctx.arc(e.x + Math.cos(eyeAngle1)*eyeDist, e.y + Math.sin(eyeAngle1)*eyeDist, 3 + blink, 0, Math.PI*2);
-         ctx.arc(e.x + Math.cos(eyeAngle2)*eyeDist, e.y + Math.sin(eyeAngle2)*eyeDist, 3 + blink, 0, Math.PI*2);
-         ctx.fill();
+        ctx.fillStyle = '#222';
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Glowing red eyes (blinking)
+        const blink = (Math.sin(Date.now() / 150) + 1) / 2;
+        ctx.fillStyle = `rgba(255, 0, 0, ${0.4 + blink * 0.6})`;
+        const eyeDist = 8;
+        const eyeAngle1 = Math.atan2(p.y - e.y, p.x - e.x) - 0.4;
+        const eyeAngle2 = Math.atan2(p.y - e.y, p.x - e.x) + 0.4;
+
+        ctx.beginPath();
+        ctx.arc(e.x + Math.cos(eyeAngle1) * eyeDist, e.y + Math.sin(eyeAngle1) * eyeDist, 3 + blink, 0, Math.PI * 2);
+        ctx.arc(e.x + Math.cos(eyeAngle2) * eyeDist, e.y + Math.sin(eyeAngle2) * eyeDist, 3 + blink, 0, Math.PI * 2);
+        ctx.fill();
       }
       ctx.restore();
 
@@ -472,31 +474,25 @@ export default function ShadowHunter() {
   }, []);
 
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const forceRotate = isTouchDevice && isPortrait;
 
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, overflow: 'hidden', backgroundColor: 'black' }}>
-      <canvas 
-        ref={canvasRef} 
-        style={{ display: 'block', width: '100%', height: '100%', cursor: 'crosshair', filter: (isTouchDevice && isPortrait) ? 'blur(10px)' : 'none' }} 
+    <div style={{ 
+      width: forceRotate ? '100vh' : '100vw', 
+      height: forceRotate ? '100vw' : '100vh', 
+      position: 'fixed', 
+      top: forceRotate ? '50vh' : 0, 
+      left: forceRotate ? '50vw' : 0, 
+      transform: forceRotate ? 'translate(-50%, -50%) rotate(90deg)' : 'none',
+      transformOrigin: 'center center',
+      overflow: 'hidden', 
+      backgroundColor: 'black' 
+    }}>
+      <canvas
+        ref={canvasRef}
+        style={{ display: 'block', width: '100%', height: '100%', cursor: 'crosshair' }}
       />
-      <GameUI />
-      
-      {/* Portrait Lock Overlay */}
-      {isTouchDevice && isPortrait && (
-        <div style={{
-          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-          backgroundColor: 'rgba(0,0,0,0.9)', zIndex: 1000, display: 'flex',
-          flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-          color: 'white', textAlign: 'center', padding: '20px'
-        }}>
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: '20px', animation: 'spin 2s infinite'}}>
-            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-            <path d="M12 18h.01"></path>
-          </svg>
-          <h2 style={{fontSize: '24px', marginBottom: '10px'}}>Rotate Your Device</h2>
-          <p style={{color: '#aaa', fontSize: '16px'}}>Shadow Hunter is meant to be played in landscape mode.</p>
-        </div>
-      )}
+      <GameUI isRotated={forceRotate} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-export default function Joystick({ onChange, onInteract, color = "rgba(255, 255, 255, 0.2)", size = 120 }) {
+export default function Joystick({ onChange, onInteract, color = "rgba(255, 255, 255, 0.2)", size = 120, isRotated = false }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
   const activeTouchId = useRef(null);
@@ -43,6 +43,13 @@ export default function Joystick({ onChange, onInteract, color = "rgba(255, 255,
     
     let deltaX = touch.clientX - centerX;
     let deltaY = touch.clientY - centerY;
+    
+    if (isRotated) {
+      const physX = deltaX;
+      const physY = deltaY;
+      deltaX = physY;
+      deltaY = -physX;
+    }
     
     const maxRadius = size / 2;
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);

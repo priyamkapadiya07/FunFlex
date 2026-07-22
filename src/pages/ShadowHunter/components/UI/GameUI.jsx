@@ -4,7 +4,7 @@ import { Battery, Heart, Zap, Crosshair, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Joystick from './Joystick';
 
-export default function GameUI() {
+export default function GameUI({ isRotated = false }) {
   const { health, maxHealth, isFlashlightOn, ammo, equippedWeapon } = useGameStore();
   const setMobileMove = useGameStore(state => state.setMobileMove);
   const setMobileLook = useGameStore(state => state.setMobileLook);
@@ -127,7 +127,7 @@ export default function GameUI() {
       {isTouchDevice && (
         <div style={styles.mobileControls}>
           <div style={styles.joystickLeft}>
-            <Joystick onChange={(pos) => setMobileMove(pos)} size={100} />
+            <Joystick onChange={(pos) => setMobileLook(pos)} size={100} isRotated={isRotated} />
           </div>
           <div style={styles.joystickRight}>
             <button 
@@ -137,7 +137,7 @@ export default function GameUI() {
             >
                <Target size={28} color="#fff" />
             </button>
-            <Joystick onChange={(pos) => setMobileLook(pos)} size={100} />
+            <Joystick onChange={(pos) => setMobileMove(pos)} size={100} isRotated={isRotated} />
           </div>
         </div>
       )}
@@ -287,6 +287,7 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
     gap: '30px',
+    justifyContent: 'flex-end',
   },
   actionButton: {
     width: '60px',

@@ -222,3 +222,50 @@ export function playOthelloPlace() {
 export function playOthelloEnd(isWin) {
   playTicTacToeEnd(isWin); // Reuse the win/lose logic from TicTacToe
 }
+
+export function playShootSound() {
+  const ctx = initAudio();
+  if (!ctx) return;
+  try {
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    // Noise burst effect using a low square wave
+    oscillator.type = 'square';
+    oscillator.frequency.setValueAtTime(100, ctx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(10, ctx.currentTime + 0.1);
+    
+    gainNode.gain.setValueAtTime(0, ctx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.2);
+  } catch(e) {}
+}
+
+export function playMonsterHit() {
+  const ctx = initAudio();
+  if (!ctx) return;
+  try {
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    oscillator.type = 'sawtooth';
+    oscillator.frequency.setValueAtTime(80, ctx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.3);
+    
+    gainNode.gain.setValueAtTime(0, ctx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.05);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.5);
+  } catch(e) {}
+}

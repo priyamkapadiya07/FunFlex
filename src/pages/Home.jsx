@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from '../components/Header';
 import GameCard from '../components/GameCard';
-import { Type, Smile, Hash, Calculator, CircleDot, Target } from 'lucide-react';
+import { Type, Smile, Hash, Calculator, CircleDot, Target, Flashlight } from 'lucide-react';
 
 export default function Home() {
   const games = [
@@ -46,6 +46,13 @@ export default function Home() {
       description: 'Relaxing classic physics or mind-bending trick shots. Fully offline.',
       icon: Target,
       route: '/billiards',
+    },
+    {
+      id: 'shadow-hunter',
+      title: 'Shadow Hunter',
+      description: 'Premium 3D horror shooter. Use your flashlight to survive the darkness.',
+      icon: Flashlight,
+      route: '/shadow-hunter',
     }
   ];
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGameStore } from '../../store/useGameStore';
-import { Battery, Heart, Zap, Crosshair, Target } from 'lucide-react';
+import { Battery, Heart, Zap, Crosshair, Target, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Joystick from './Joystick';
 
@@ -23,11 +23,13 @@ export default function GameUI({ isRotated = false }) {
       {/* Top Left: Return to menu */}
       <div style={styles.topBar}>
         <div style={{display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap'}}>
-          <Link to="/" style={styles.backButton}>Exit</Link>
+          <Link to="/" style={styles.backButton}>
+            <Home size={28} color="var(--color-text)" />
+          </Link>
           
           {/* Health Bar moved to top on mobile */}
           <div style={{...styles.hudSection, marginBottom: 0, padding: '8px 16px', minWidth: '150px'}}>
-            <Heart size={20} color="var(--color-primary-dark)" />
+            <Heart size={20} color="var(--color-primary-dark)" fill="var(--color-primary-dark)" />
             <div style={styles.barContainer}>
               <div style={{...styles.barFill, width: `${healthPercent}%`, backgroundColor: 'var(--color-primary-dark)'}} />
             </div>
@@ -60,7 +62,8 @@ export default function GameUI({ isRotated = false }) {
         <div style={{
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
           backgroundColor: 'rgba(0, 0, 0, 0.85)', display: 'flex', flexDirection: 'column', 
-          justifyContent: 'center', alignItems: 'center', zIndex: 100, color: 'var(--color-success)'
+          justifyContent: 'center', alignItems: 'center', zIndex: 100, color: 'var(--color-success)',
+          pointerEvents: 'auto'
         }}>
           <h1 style={{fontSize: '4rem', textShadow: '0 0 20px var(--color-success)'}}>POWER RESTORED</h1>
           <p style={{fontSize: '1.5rem', color: 'white', marginTop: '20px'}}>You survived the darkness.</p>
@@ -82,7 +85,8 @@ export default function GameUI({ isRotated = false }) {
         <div style={{
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
           backgroundColor: 'rgba(50, 0, 0, 0.85)', display: 'flex', flexDirection: 'column', 
-          justifyContent: 'center', alignItems: 'center', zIndex: 100, color: 'var(--color-diff-expert)'
+          justifyContent: 'center', alignItems: 'center', zIndex: 100, color: 'var(--color-diff-expert)',
+          pointerEvents: 'auto'
         }}>
           <h1 style={{fontSize: '4rem', textShadow: '0 0 20px var(--color-diff-expert)'}}>YOU DIED</h1>
           <p style={{fontSize: '1.5rem', color: 'white', marginTop: '20px'}}>The shadows consumed you.</p>
@@ -108,7 +112,7 @@ export default function GameUI({ isRotated = false }) {
       {!isTouchDevice && (
         <div style={styles.bottomHud}>
           <div style={styles.hudSection}>
-            <Heart size={24} color="var(--color-primary-dark)" />
+            <Heart size={24} color="var(--color-primary-dark)" fill="var(--color-primary-dark)" />
             <div style={styles.barContainer}>
               <div style={{...styles.barFill, width: `${healthPercent}%`, backgroundColor: 'var(--color-primary-dark)'}} />
             </div>
@@ -166,14 +170,15 @@ const styles = {
     pointerEvents: 'auto',
   },
   backButton: {
-    display: 'inline-block',
-    padding: '8px 16px',
-    backgroundColor: 'var(--color-surface)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
     color: 'var(--color-text)',
     textDecoration: 'none',
-    borderRadius: 'var(--radius-sm)',
-    fontWeight: 'bold',
-    boxShadow: 'var(--shadow-sm)',
+    cursor: 'pointer',
+    border: 'none',
+    padding: '4px',
   },
   crosshair: {
     position: 'absolute',
@@ -201,12 +206,14 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    backgroundColor: 'var(--color-surface)',
+    backgroundColor: 'rgba(30, 10, 10, 0.5)',
+    backdropFilter: 'blur(4px)',
     padding: '12px 20px',
     borderRadius: 'var(--radius-md)',
     boxShadow: 'var(--shadow-md)',
     marginBottom: '12px',
     minWidth: '200px',
+    color: '#ddd',
   },
   barContainer: {
     flex: 1,
@@ -223,11 +230,13 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    backgroundColor: 'var(--color-surface)',
+    backgroundColor: 'rgba(30, 10, 10, 0.5)',
+    backdropFilter: 'blur(4px)',
     padding: '12px 24px',
     borderRadius: 'var(--radius-md)',
     boxShadow: 'var(--shadow-md)',
     marginBottom: '12px',
+    color: '#ddd',
   },
   weaponText: {
     fontWeight: 'bold',
@@ -270,7 +279,7 @@ const styles = {
   },
   mobileControls: {
     position: 'absolute',
-    bottom: '20px',
+    bottom: '80px',
     left: '20px',
     right: '20px',
     display: 'flex',

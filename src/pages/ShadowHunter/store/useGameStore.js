@@ -44,7 +44,7 @@ export const useGameStore = create((set) => ({
     };
   }),
   rechargeBattery: (amount) => set((state) => ({ battery: Math.min(state.maxBattery, state.battery + amount) })),
-  takeDamage: (amount) => set((state) => ({ health: Math.max(0, state.health - amount) })),
+
   heal: (amount) => set((state) => ({ health: Math.min(state.maxHealth, state.health + amount) })),
   equipWeapon: (weaponId) => set((state) => {
     if (state.unlockedWeapons.includes(weaponId)) {

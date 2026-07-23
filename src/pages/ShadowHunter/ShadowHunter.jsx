@@ -13,6 +13,17 @@ const SPRINT_MULTIPLIER = 1.5;
 const ENEMY_SPEED = 100;
 const BULLET_SPEED = 500;
 
+const circleRectCollide = (cx, cy, cr, rx, ry, rw, rh) => {
+  let testX = cx;
+  let testY = cy;
+  if (cx < rx) testX = rx; else if (cx > rx + rw) testX = rx + rw;
+  if (cy < ry) testY = ry; else if (cy > ry + rh) testY = ry + rh;
+  let distX = cx - testX;
+  let distY = cy - testY;
+  let distance = Math.sqrt((distX * distX) + (distY * distY));
+  return distance <= cr;
+};
+
 export default function ShadowHunter() {
   const canvasRef = useRef(null);
   const takeDamage = useGameStore(state => state.takeDamage);
@@ -36,7 +47,7 @@ export default function ShadowHunter() {
     enemies: [],
     particles: [],
     walls: [],
-    generator: { x: MAP_WIDTH * TILE_SIZE / 2, y: MAP_HEIGHT * TILE_SIZE / 2 - 1000, width: 60, height: 60, active: false },
+    generator: { x: MAP_WIDTH * TILE_SIZE / 2, y: MAP_HEIGHT * TILE_SIZE / 2 - 800, width: 60, height: 60, active: false },
     lastTime: performance.now(),
     lastShootTime: 0,
     camera: { x: 0, y: 0 },
@@ -65,28 +76,68 @@ export default function ShadowHunter() {
     state.walls.push({ x: 0, y: (MAP_HEIGHT - 1) * TILE_SIZE, width: MAP_WIDTH * TILE_SIZE, height: TILE_SIZE });
     state.walls.push({ x: (MAP_WIDTH - 1) * TILE_SIZE, y: 0, width: TILE_SIZE, height: MAP_HEIGHT * TILE_SIZE });
 
+    // Randomize Generator Location (Must be at least 700px from center player at 1000, 1000)
+    let validGen = false;
+    while (!validGen) {
+      state.generator.x = Math.random() * (MAP_WIDTH - 6) * TILE_SIZE + 3 * TILE_SIZE;
+      state.generator.y = Math.random() * (MAP_HEIGHT - 6) * TILE_SIZE + 3 * TILE_SIZE;
+      const dx = state.generator.x - 1000;
+      const dy = state.generator.y - 1000;
+      if (Math.sqrt(dx * dx + dy * dy) > 700) validGen = true;
+    }
+
     // Generate random maze walls
-    for (let i = 0; i < 40; i++) {
-      state.walls.push({
-        x: Math.random() * (MAP_WIDTH - 4) * TILE_SIZE + 2 * TILE_SIZE,
-        y: Math.random() * (MAP_HEIGHT - 4) * TILE_SIZE + 2 * TILE_SIZE,
-        width: (Math.random() * 3 + 1) * TILE_SIZE,
-        height: (Math.random() * 3 + 1) * TILE_SIZE
-      });
+    for (let i = 0; i < 60; i++) {
+      let wx, wy, wwidth, wheight;
+      let valid = false;
+      while(!valid) {
+        wx = Math.random() * (MAP_WIDTH - 4) * TILE_SIZE + 2 * TILE_SIZE;
+        wy = Math.random() * (MAP_HEIGHT - 4) * TILE_SIZE + 2 * TILE_SIZE;
+        wwidth = (Math.random() * 3 + 1) * TILE_SIZE;
+        wheight = (Math.random() * 3 + 1) * TILE_SIZE;
+        
+        const playerSafe = (wx + wwidth < 800 || wx > 1200 || wy + wheight < 800 || wy > 1200);
+        const genSafe = (wx + wwidth < state.generator.x - 50 || wx > state.generator.x + 110 || wy + wheight < state.generator.y - 50 || wy > state.generator.y + 110);
+        
+        if (playerSafe && genSafe) valid = true;
+      }
+      state.walls.push({ x: wx, y: wy, width: wwidth, height: wheight });
     }
 
     // Spawn some initial enemies
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 8; i++) {
       spawnEnemy(state);
     }
-  }, []);
+  }, [gameOver, gameWon]);
 
   const spawnEnemy = (state) => {
-    const angle = Math.random() * Math.PI * 2;
-    const distance = 800 + Math.random() * 500;
+    let ex, ey;
+    let validSpawn = false;
+    let attempts = 0; // prevent infinite loops
+    
+    while (!validSpawn && attempts < 50) {
+      attempts++;
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 800 + Math.random() * 500;
+      
+      ex = state.player.x + Math.cos(angle) * distance;
+      ey = state.player.y + Math.sin(angle) * distance;
+      
+      ex = Math.max(100, Math.min(MAP_WIDTH * TILE_SIZE - 100, ex));
+      ey = Math.max(100, Math.min(MAP_HEIGHT * TILE_SIZE - 100, ey));
+      
+      validSpawn = true;
+      for (const w of state.walls) {
+        if (circleRectCollide(ex, ey, 15, w.x, w.y, w.width, w.height)) {
+          validSpawn = false;
+          break;
+        }
+      }
+    }
+    
     state.enemies.push({
-      x: state.player.x + Math.cos(angle) * distance,
-      y: state.player.y + Math.sin(angle) * distance,
+      x: ex,
+      y: ey,
       radius: 15,
       hp: 100
     });
@@ -152,17 +203,6 @@ export default function ShadowHunter() {
     const ctx = canvas.getContext('2d');
     let animationId;
 
-    const circleRectCollide = (cx, cy, cr, rx, ry, rw, rh) => {
-      let testX = cx;
-      let testY = cy;
-      if (cx < rx) testX = rx; else if (cx > rx + rw) testX = rx + rw;
-      if (cy < ry) testY = ry; else if (cy > ry + rh) testY = ry + rh;
-      let distX = cx - testX;
-      let distY = cy - testY;
-      let distance = Math.sqrt((distX * distX) + (distY * distY));
-      return distance <= cr;
-    };
-
     const loop = (now) => {
       const state = gameState.current;
       const delta = (now - state.lastTime) / 1000;
@@ -185,6 +225,7 @@ export default function ShadowHunter() {
       // Get latest mobile inputs without triggering React re-renders
       const { mobileMove, mobileLook, mobileShoot } = useGameStore.getState();
 
+      if (!gameOver && !gameWon) {
       // --- INPUT LOGIC ---
       let vx = 0, vy = 0;
 
@@ -334,6 +375,7 @@ export default function ShadowHunter() {
 
         if (remove) state.bullets.splice(i, 1);
       }
+      } // End of if (!gameOver && !gameWon)
 
       // --- RENDERING ---
       ctx.fillStyle = '#0a0a0a'; // Floor background

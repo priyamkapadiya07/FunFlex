@@ -13,7 +13,7 @@ export default function GameUI({ isRotated = false }) {
   const gameWon = useGameStore(state => state.gameWon);
   const gameOver = useGameStore(state => state.gameOver);
   const resetGame = useGameStore(state => state.resetGame);
-  
+
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
   const healthPercent = (health / maxHealth) * 100;
@@ -22,30 +22,30 @@ export default function GameUI({ isRotated = false }) {
     <div style={styles.container}>
       {/* Top Left: Return to menu */}
       <div style={styles.topBar}>
-        <div style={{display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap'}}>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
           <Link to="/" style={styles.backButton}>
             <Home size={28} color="var(--color-text)" />
           </Link>
-          
+
           {/* Health Bar moved to top on mobile */}
-          <div style={{...styles.hudSection, marginBottom: 0, padding: '8px 16px', minWidth: '150px'}}>
+          <div style={{ ...styles.hudSection, marginBottom: 0, padding: '8px 16px', minWidth: '150px' }}>
             <Heart size={20} color="var(--color-primary-dark)" fill="var(--color-primary-dark)" />
             <div style={styles.barContainer}>
-              <div style={{...styles.barFill, width: `${healthPercent}%`, backgroundColor: 'var(--color-primary-dark)'}} />
+              <div style={{ ...styles.barFill, width: `${healthPercent}%`, backgroundColor: 'var(--color-primary-dark)' }} />
             </div>
-            <span style={{fontWeight: 'bold'}}>{Math.round(health)}</span>
+            <span style={{ fontWeight: 'bold' }}>{Math.round(health)}</span>
           </div>
 
           <div style={styles.objectivesPanel}>
             <h3 style={styles.objectivesTitle}>Objectives</h3>
             {objectives.map(obj => (
-              <div key={obj.id} style={{...styles.objectiveItem, textDecoration: obj.completed ? 'line-through' : 'none', opacity: obj.completed ? 0.5 : 1}}>
+              <div key={obj.id} style={{ ...styles.objectiveItem, textDecoration: obj.completed ? 'line-through' : 'none', opacity: obj.completed ? 0.5 : 1 }}>
                 • {obj.text}
               </div>
             ))}
           </div>
         </div>
-        
+
         {!isTouchDevice && (
           <div style={styles.controlsGuide}>
             <strong>Controls:</strong><br />
@@ -60,19 +60,19 @@ export default function GameUI({ isRotated = false }) {
       {/* WIN SCREEN */}
       {gameWon && (
         <div style={{
-          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
-          backgroundColor: 'rgba(0, 0, 0, 0.85)', display: 'flex', flexDirection: 'column', 
+          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.85)', display: 'flex', flexDirection: 'column',
           justifyContent: 'center', alignItems: 'center', zIndex: 100, color: 'var(--color-success)',
           pointerEvents: 'auto'
         }}>
-          <h1 style={{fontSize: '4rem', textShadow: '0 0 20px var(--color-success)'}}>POWER RESTORED</h1>
-          <p style={{fontSize: '1.5rem', color: 'white', marginTop: '20px'}}>You survived the darkness.</p>
-          <button 
+          <h1 style={{ fontSize: '4rem', textShadow: '0 0 20px var(--color-success)' }}>POWER RESTORED</h1>
+          <p style={{ fontSize: '1.5rem', color: 'white', marginTop: '20px' }}>You survived the darkness.</p>
+          <button
             style={{
               marginTop: '40px', padding: '12px 24px', backgroundColor: 'var(--color-success)',
               color: '#000', border: 'none', borderRadius: 'var(--radius-md)', fontSize: '1.2rem',
               fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 15px var(--color-success)'
-            }} 
+            }}
             onClick={() => resetGame()}
           >
             Play Again
@@ -83,19 +83,19 @@ export default function GameUI({ isRotated = false }) {
       {/* GAME OVER SCREEN */}
       {gameOver && !gameWon && (
         <div style={{
-          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
-          backgroundColor: 'rgba(50, 0, 0, 0.85)', display: 'flex', flexDirection: 'column', 
+          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+          backgroundColor: 'rgba(50, 0, 0, 0.85)', display: 'flex', flexDirection: 'column',
           justifyContent: 'center', alignItems: 'center', zIndex: 100, color: 'var(--color-diff-expert)',
           pointerEvents: 'auto'
         }}>
-          <h1 style={{fontSize: '4rem', textShadow: '0 0 20px var(--color-diff-expert)'}}>YOU DIED</h1>
-          <p style={{fontSize: '1.5rem', color: 'white', marginTop: '20px'}}>The shadows consumed you.</p>
-          <button 
+          <h1 style={{ fontSize: '4rem', textShadow: '0 0 20px var(--color-diff-expert)' }}>YOU DIED</h1>
+          <p style={{ fontSize: '1.5rem', color: 'white', marginTop: '20px' }}>The shadows consumed you.</p>
+          <button
             style={{
               marginTop: '40px', padding: '12px 24px', backgroundColor: 'var(--color-diff-expert)',
               color: '#fff', border: 'none', borderRadius: 'var(--radius-md)', fontSize: '1.2rem',
               fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 15px var(--color-diff-expert)'
-            }} 
+            }}
             onClick={() => resetGame()}
           >
             Try Again
@@ -114,11 +114,11 @@ export default function GameUI({ isRotated = false }) {
           <div style={styles.hudSection}>
             <Heart size={24} color="var(--color-primary-dark)" fill="var(--color-primary-dark)" />
             <div style={styles.barContainer}>
-              <div style={{...styles.barFill, width: `${healthPercent}%`, backgroundColor: 'var(--color-primary-dark)'}} />
+              <div style={{ ...styles.barFill, width: `${healthPercent}%`, backgroundColor: 'var(--color-primary-dark)' }} />
             </div>
-            <span style={{fontWeight: 'bold'}}>{Math.round(health)}</span>
+            <span style={{ fontWeight: 'bold' }}>{Math.round(health)}</span>
           </div>
-          
+
           <div style={styles.weaponSection}>
             <Zap size={24} color="var(--color-diff-medium)" />
             <span style={styles.weaponText}>{equippedWeapon.toUpperCase()}</span>
@@ -126,7 +126,7 @@ export default function GameUI({ isRotated = false }) {
           </div>
         </div>
       )}
-      
+
       {/* Mobile Controls Overlay */}
       {isTouchDevice && (
         <div style={styles.mobileControls}>
@@ -134,12 +134,12 @@ export default function GameUI({ isRotated = false }) {
             <Joystick onChange={(pos) => setMobileLook(pos)} size={100} isRotated={isRotated} />
           </div>
           <div style={styles.joystickRight}>
-            <button 
-               style={{...styles.actionButton, backgroundColor: 'rgba(200, 50, 50, 0.6)'}} 
-               onTouchStart={() => setMobileShoot(true)} 
-               onTouchEnd={() => setMobileShoot(false)}
+            <button
+              style={{ ...styles.actionButton, backgroundColor: 'rgba(200, 50, 50, 0.6)' }}
+              onTouchStart={() => setMobileShoot(true)}
+              onTouchEnd={() => setMobileShoot(false)}
             >
-               <Target size={28} color="#fff" />
+              <Target size={28} color="#fff" />
             </button>
             <Joystick onChange={(pos) => setMobileMove(pos)} size={100} isRotated={isRotated} />
           </div>
@@ -279,7 +279,7 @@ const styles = {
   },
   mobileControls: {
     position: 'absolute',
-    bottom: '80px',
+    bottom: '50px',
     left: '20px',
     right: '20px',
     display: 'flex',
